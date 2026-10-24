@@ -16,6 +16,7 @@ var has_emitter: bool = false
 var emitter_channel: String = "red"
 var emitter: MeshInstance3D
 var optical_control: Node
+var station_control: Node
 
 
 func _ready() -> void:
@@ -83,7 +84,7 @@ func _build_character() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if optical_control != null and optical_control.control_mode:
+	if (optical_control != null and optical_control.control_mode) or (station_control != null and station_control.control_mode):
 		velocity = Vector3.ZERO
 		firing = false
 		_update_aim()

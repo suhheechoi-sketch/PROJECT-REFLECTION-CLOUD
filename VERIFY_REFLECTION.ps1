@@ -21,7 +21,7 @@ $smokeLog = Join-Path $validationPath 'runtime_smoke.log'
 & $enginePath --headless --path $PSScriptRoot --quit-after 4 --log-file $smokeLog
 Assert-CleanGodotRun $smokeLog $LASTEXITCODE
 
-$testNames = @('optics_math_test', 'progression_state_test', 'stage_catalog_test', 'tutorial_flow_test', 'quality_pass_test', 'energy_flow_test', 'navigation_test', 'exploration_test', 'room_visibility_test', 'camera_motion_test', 'a01_lab_test', 'camera_ui_test', 'optical_control_test', 'optical_rules_v51_test', 'representative_puzzle_test', 'asset_lock_test')
+$testNames = @('optics_math_test', 'progression_state_test', 'stage_catalog_test', 'tutorial_flow_test', 'quality_pass_test', 'energy_flow_test', 'navigation_test', 'exploration_test', 'room_visibility_test', 'camera_motion_test', 'a01_lab_test', 'a02_docking_test', 'camera_ui_test', 'optical_control_test', 'optical_rules_v51_test', 'representative_puzzle_test', 'asset_lock_test')
 foreach ($testName in $testNames) {
     $testLog = Join-Path $validationPath "$testName.log"
     & $enginePath --headless --path $PSScriptRoot --script "res://tests/$testName.gd" --log-file $testLog
@@ -42,4 +42,4 @@ if ($VisualReview) {
     & $enginePath --path $PSScriptRoot --script res://tests/optical_control_test.gd --log-file $remoteReviewLog
     Assert-CleanGodotRun $remoteReviewLog $LASTEXITCODE
 }
-Write-Output 'PASS: runtime startup and all 16 validation suites.'
+Write-Output 'PASS: runtime startup and all 17 validation suites.'

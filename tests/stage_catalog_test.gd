@@ -13,7 +13,8 @@ func _initialize() -> void:
 	_check(catalog.get_stage("B-01").get("devices", []).has("G-B01"), "B-01 declares its implemented fixed ×2 amplifier.")
 	_check(catalog.get_stage("B-02").get("devices", []).has("W-B02") and catalog.get_stage("B-02").get("implementation") == "playable", "B-02 declares its fixed white source and playable RGB path.")
 	_check(catalog.get_stage("C-01").get("implementation") == "playable", "C-01 declares its tested simultaneous 50:50 relay path.")
-	_check(catalog.get_stage("F-02").get("success", {}).get("type") == "four_phase_optical_boss", "F-02 retains the four-phase optical boss design.")
+	_check(catalog.get_stage("F-02").get("implementation") == "superseded", "Latest directive supersedes DIRECTOR boss design.")
+	_check(catalog.get_stage("A-02").get("devices", []).has("M-A02-2") and catalog.get_stage("A-02").get("implementation") == "playable", "A02 declares two console mirrors and the implemented docking route.")
 	for error_message in catalog.validate():
 		_check(false, error_message)
 

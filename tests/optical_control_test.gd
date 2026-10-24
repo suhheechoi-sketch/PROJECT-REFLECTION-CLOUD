@@ -80,7 +80,10 @@ func run() -> void:
 	check(game.optical_control.near_console(), "Existing room console is reachable")
 	var console_position: Vector3 = game.player.position
 	var previous_overview: bool = game.puzzle_camera.overview
+	game.selected_device = game.a01_lab.mirrors[0]
+	game.selected_device.set_selected(true)
 	press(KEY_E)
+	check(game.selected_device == null and not game.a01_lab.mirrors[0].is_selected, "Console entry clears stale local selection")
 	check(game.optical_control.authorized() and game.optical_control.control_mode and game.puzzle_camera.overview and game.player.position == console_position, "E console grants permission and immediately enters full-room remote mode")
 	check(not game.optical_control.permissions.has("B01"), "Permissions are scoped to A01")
 	await capture("console")
@@ -291,7 +294,10 @@ func run() -> void:
 	game.player.position = Lab.SPAWN
 	game.player.reset_physics_interpolation()
 	check(game.optical_control.authorized(), "Reentry reuses the one-time room authorization")
+	var before_restart: bool = game.puzzle_camera.overview
+	game.optical_control.enter_control_mode()
 	game._reset_all_progress()
+	check(not game.optical_control.control_mode and game.puzzle_camera.overview == before_restart, "Full restart exits console through camera restoration")
 	check(game.optical_control.permissions.is_empty(), "Full restart clears run-scoped console permissions")
 	print("Optical control checks: %d failure(s)." % failures)
 	quit(0 if failures == 0 else 1)
