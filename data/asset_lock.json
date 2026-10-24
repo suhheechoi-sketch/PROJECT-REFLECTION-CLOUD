@@ -1,0 +1,36 @@
+{
+    "generation":  "RF-v5.1-optics-map",
+    "engine":  "4.7.2.stable.official.ed1daf0bf",
+    "files":  [
+                  {
+                      "path":  "assets/v4_0/device_visuals.gd",
+                      "version":  "4.0.0",
+                      "sha256":  "7e915e0aa9c0408c06dba3791921ff87544abd9f79945b9c8dd3996f5fe287fd"
+                  },
+                  {
+                      "path":  "assets/v4_0/facility_visuals.gd",
+                      "version":  "4.0.0",
+                      "sha256":  "284c6c75f51682bf595d304868bbd1e73e0b4b276aa2f4a6fcf2d5574f71c2bd"
+                  },
+                  {
+                      "path":  "assets/v4_0/surface_finish.gd",
+                      "version":  "4.0.0",
+                      "sha256":  "ec0e3d7c7ecd2d4254542b9522991c9caed6f300a0ae708bc3c52ed343cf10f5"
+                  },
+                  {
+                      "path":  "assets/v4_0/film_grain.gdshader",
+                      "version":  "4.0.0",
+                      "sha256":  "bbaf6027c0c3d90fe10393c88c30afab56e063df94441e46517dc80bd7d7d6a4"
+                  },
+                  {
+                      "path":  "assets/v5_1/facility_visuals.gd",
+                      "version":  "5.1.0",
+                      "sha256":  "8acbbb297a2a7a2da79eFC85cfed32628061464a466212765c96ff743759910b"
+                  },
+                  {
+                      "path":  "assets/v5_1/device_visuals.gd",
+                      "version":  "5.1.0",
+                      "sha256":  "ca6cef349c8bfc74cd3be5fd9c49e5665388832292d3de6e9200e0f81502906b"
+                  }
+              ]
+}

@@ -1,0 +1,6 @@
+.godot/
+.godot-profile/
+.codex-backup/
+tools/*
+!tools/.gdignore
+*.tmp
