@@ -56,9 +56,9 @@ Safari에서 T-01 단말기 → 발사기 획득 → T-02 직사격 → T-03/04 
 
 - 기반: origin/main `3165a3a`.
 - 엔진: `4.7.2.stable.official.ed1daf0bf`.
-- 변경 전: 시작 검사 및 기존 21개 회귀 스위트 통과.
+- 변경 전: 시작 검사 및 기존 20개 회귀 스위트 통과.
 - 변경 후: 기존 회귀 검사와 신규 touch_controls_test (동시 이동/발사, 손가락별 해제, 포커스 입력 초기화, E 단말기/발사기 획득, 콘솔 이탈 시 발사 억제, 도움말 토글) 실행.
 - 공식 4.7.2 템플릿 SHA512 확인 후 Web release export 생성. `index.wasm`, `index.pck`, HTML/JS와 오디오 worklet을 포함한다.
 - Pages 관리 API는 작업 환경에서 `Forbidden`으로 차단됨. Pages 활성화·실제 URL 응답 확인은 완료되지 않았으며, main 병합 후 배포 workflow 성공 확인이 필요하다.
 - 실물 iPad Safari의 전체 T/A 플레이·성능·오디오 검증은 미실시.
-- 변경 후 전체 검사 결과: 시작 검사 및 22개 GDScript 회귀 스위트 통과. 웹 브라우저에서 WASM 부팅과 멀티터치 smoke 통과. 화면 검수에서 발견한 한국어 HUD 글리프 누락은 T/A HUD 테마 및 Label3D에 포함 폰트를 지정하여 수정했다.
+- 변경 후 전체 검사 결과: 시작 검사와 21개 GDScript 회귀 스위트(합계 22개 검사) 통과. 웹 브라우저에서 WASM 부팅과 멀티터치 smoke 통과. 화면 검수에서 발견한 한국어 HUD 글리프 누락은 T/A HUD 테마 및 Label3D에 포함 폰트를 지정하여 수정했다.
