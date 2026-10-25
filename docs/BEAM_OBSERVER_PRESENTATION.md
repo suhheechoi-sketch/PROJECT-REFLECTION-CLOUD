@@ -4,6 +4,8 @@
 
 기준 main은 PR #6 병합 `85dd79c32650b03dfb33c66567478bdb9fa319e6`이다. [사용자 요청문](beam_observer_source/user_request.txt)을 작업 요청으로, [첨부 PDF](beam_observer_source/design_and_camera_guide.pdf)를 사용자가 지정한 디자인/기술 참고 자료로 구분했다. PDF의 콘셉트 이미지를 실행 캡처나 검증 결과로 취급하지 않았다. `AGENTS.md`, README, 루트 미술·치수·장치·레벨·에셋 규칙, docs의 기존 통합 지시·T/A 보정/검증 기록을 대조했다. 독립 v6.2 원문이 추가로 발견됐다는 뜻은 아니다.
 
+첨부 PDF의 SHA256은 `a643740b97149a56a844c99f8757eee9e88d3f78a92fdb2608b4db45fd7194ec`이며 업로드 원본과 저장된 파일이 일치한다. `.gitattributes`에서 PDF를 binary로 지정하여 문서 내부 바이트를 텍스트로 정규화하지 않는다.
+
 Godot **4.7.2.stable.official.ed1daf0bf / Standard / Compatibility** 유지. 별도 브랜치에서 작업하며 main에 직접 병합하지 않는다. 기본 실행은 계속 `scenes/ta_demo.tscn`이다.
 
 ## 수정 파일
