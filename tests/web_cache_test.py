@@ -34,6 +34,7 @@ with tempfile.TemporaryDirectory() as tmp:
             page = browser.new_page()
             page.goto(f'http://127.0.0.1:{server.server_port}/index.html')
             page.wait_for_function('current === "' + old + '"')
+            page.frame_locator("#game").get_by_text("Build: " + old[:7]).wait_for()
             assert old in page.frames[1].url
             publish(new)
             page.evaluate('check()')
@@ -43,6 +44,7 @@ with tempfile.TemporaryDirectory() as tmp:
             page.click('#update')
             page.wait_for_function('current === "' + new + '"')
             page.wait_for_function('document.querySelector("#game").src.includes("' + new + '")')
+            page.frame_locator("#game").get_by_text("Build: " + new[:7]).wait_for()
             assert new in page.frames[1].url
             browser.close()
             print('PASS: cached launcher discovers changed manifest; update loads only new commit path')
