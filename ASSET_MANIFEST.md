@@ -32,3 +32,10 @@
 | RF-DEV | `assets/v5_1/device_visuals.gd` | 5.1.0 | v4 절차형 장치 자산을 상속하고 경사형 증폭기의 프레임·투명 코어·전력 표식을 추가 | v4 원본을 유지하며 파생 파일의 SHA-256을 잠금. 실제 경사 광로 캡처와 수신기 테스트 |
 
 `data/asset_lock.json`의 생성 세대는 RF-v5.1-optics-map이며 RF-FAC와 RF-DEV v5.1 해시를 포함한다. 광학 계산·탐색은 프로젝트 코드와 Git으로 버전 관리하고, 외형 변경은 이 manifest와 잠금 파일을 함께 갱신한다. v5.1 기능 테스트 로그와 검수 캡처는 무시 처리된 `tools/validation/` 아래에 둔다.
+
+## T/A DEMO v1.0 파생 세대 (2026-10-25)
+
+- 신규 원본: `assets/ta_demo_details.gd`, `scripts/ta_geometry.gd`의 절차형 침상·CRT·바닥 패널·배관·감시 카메라/표식. 외부 자산 없음.
+- 교체 이유: 업로드한 T/A 도면과 청결한 T / 노후 A 분위기에 맞춘 별도 시작 씬. 기존 `assets/v4_0/`·`data/asset_lock.json`은 수정하지 않음.
+- 호환성: 기존 v5.1 장치 외장과 광학 콜라이더를 공유. 장식 패널·배관은 충돌을 추가하지 않고 침상은 몸/광선에 충돌. 일반 벽 0.45m, 서비스 칸막이 0.20m. 최종 치수·보정은 `docs/TA_DEMO_VALIDATED_GEOMETRY.md`.
+- 실제 검수 화면: `docs/ta_demo_evidence/ta_start.png`, `ta_a01_solved.png`, `ta_a02_rail.png`, `ta_a03_ready.png`. Godot 4.7.2 / X11 / llvmpipe의 자동 렌더 검사이며 수동 플레이 인증이 아님.

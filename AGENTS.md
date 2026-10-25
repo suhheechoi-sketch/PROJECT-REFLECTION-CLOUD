@@ -11,3 +11,5 @@
 - 최신 작업 우선순위는 `docs/INTEGRATED_DIRECTIVE_20261025.md`(사용자 첨부 통합 지시서)의 03장 → 확인 가능한 v6.2 규칙 → 현재 저장소 세부 구현 → v6.3 제안 순이다. 첨부본 외 독립 v6.2 원문은 현재 체크아웃에서 확인되지 않았다.
 - DIRECTOR 보스전과 필수 고정 광원 퍼즐을 신규 구현하지 않는다. 기존 W-B02 시제품의 휴대 백색광 전환은 남은 작업이다.
 - Linux 검증은 `VERIFY_REFLECTION.sh`로 동일 17개 테스트와 시작 검사를 실행할 수 있다. 실제 엔진 버전, 에디터/렌더링 제한은 보고서에 별도 기록한다.
+
+- 기본 데모 시작은 `scenes/ta_demo.tscn`이다. T/A 신규 배치의 최종 보정·자동/수동 검증 구분은 `docs/TA_DEMO_VALIDATED_GEOMETRY.md`, `docs/TA_DEMO_REPORT.md`를 따른다. `scenes/main.tscn`은 보존된 전체 시설 회귀 기준이다.
