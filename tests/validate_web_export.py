@@ -5,6 +5,15 @@ import re
 import sys
 
 folder = Path(sys.argv[1] if len(sys.argv) > 1 else "work/web")
+if (folder / "build.json").exists():
+    import hashlib
+    manifest = json.loads((folder / "build.json").read_text())
+    assert re.fullmatch(r"[a-f0-9]{40}", manifest["commit"])
+    assert manifest["entry"] == f"builds/{manifest['commit']}/index.html"
+    folder = folder / "builds" / manifest["commit"]
+    for name, digest in manifest["files"].items():
+        assert hashlib.sha256((folder / name).read_bytes()).hexdigest() == digest, name
+    print("Verified release commit:", manifest["commit"])
 for filename in ("index.html", "index.js", "index.wasm", "index.pck"):
     path = folder / filename
     assert path.is_file() and path.stat().st_size > 0, f"Missing/empty export: {path}"

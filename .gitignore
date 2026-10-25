@@ -6,3 +6,6 @@ tools/*
 *.tmp
 
 work/
+
+# Generated from the actual checkout before export.
+data/build_info.json

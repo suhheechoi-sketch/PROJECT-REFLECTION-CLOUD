@@ -1,0 +1,8 @@
+127.0.0.1 - - [25/Oct/2026 09:33:07] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 09:33:07] "GET /build.json?t=1792920787302 HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 09:33:07] "GET /builds/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/index.html HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 09:33:07] "GET /build.json?t=1792920787399 HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 09:33:07] "GET /index.html HTTP/1.1" 304 -
+127.0.0.1 - - [25/Oct/2026 09:33:07] "GET /build.json?t=1792920787594 HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 09:33:07] "GET /builds/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/index.html HTTP/1.1" 200 -
+PASS: cached launcher discovers changed manifest; update loads only new commit path

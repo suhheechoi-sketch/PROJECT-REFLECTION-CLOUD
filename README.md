@@ -1,5 +1,7 @@
 # PROJECT: REFLECTION — T/A DEMO v1.0
 
+웹 빌드 식별·캐시 격리: [조사 결과, 실제 native/웹 전후 화면 및 실행 방법](docs/WEB_VERSION_VISIBILITY.md). 도움말에서 실제 checkout Build를 확인할 수 있습니다.
+
 최신 콘솔 개선: [T03 지정 차폐실 제거·A01/A02/A03 광학 콘솔·PC/터치 검증](docs/OPTICAL_CONSOLE_REVISION.md). A 일반 거울은 콘솔 E/조작 진입 후 클릭/터치로 선택합니다. T 근접 학습과 현장 레일 조작은 유지합니다.
 
 2026-10-25 Web game #5 수정: [원인·웹 빌드·검증 결과](docs/WEB_BUILD_FIX_20261025.md). 물리 프레임 대기 오류를 수정했고, iPad용 터치 **새 게임** 버튼을 추가했습니다. PR 빌드 성공과 실제 Pages 배포/기기 검증은 보고서에서 구분합니다.
