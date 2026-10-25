@@ -1,6 +1,7 @@
 extends Node3D
 ## Visual-only alpha; physics bodies and optical surfaces are never touched.
 var enabled := true
+var console_room := Rect2()
 var target: Node3D
 var camera: Camera3D
 var walls: Array[Dictionary] = []
@@ -44,6 +45,7 @@ func _process(delta: float) -> void:
 						blocked = true
 		var material: StandardMaterial3D = record.material
 		var color := material.albedo_color
-		var goal := 0.15 if blocked else float(record.alpha)
+		var in_console: bool = console_room.has_area() and console_room.grow(0.25).has_point(Vector2(visual.global_position.x,visual.global_position.z))
+		var goal := 0.15 if blocked or in_console else float(record.alpha)
 		color.a = lerpf(color.a, goal, 1.0 - exp(-16.0 * delta))
 		material.albedo_color = color

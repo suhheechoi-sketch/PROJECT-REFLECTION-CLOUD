@@ -4,6 +4,7 @@ var game: Node3D
 var contacts: Dictionary = {}
 var buttons: Dictionary = {}
 var fine := false
+var console_layout := false
 
 func setup(world: Node3D) -> void:
 	game = world
@@ -16,6 +17,10 @@ func setup(world: Node3D) -> void:
 
 func _layout() -> void:
 	var s := get_viewport_rect().size
+	if _console_mode():
+		buttons = {"-":Rect2(s.x*0.5-230,s.y-115,130,90),"+":Rect2(s.x*0.5-80,s.y-115,130,90),"FINE":Rect2(s.x*0.5+70,s.y-115,130,90),"ESC":Rect2(s.x-170,s.y-115,150,90),"HELP":Rect2(20,s.y-115,150,90)}
+		if game.control_mode: buttons["F"] = Rect2(s.x*0.5+240,s.y-115,130,90)
+		return
 	buttons = {
 		"W": Rect2(100, s.y-440, 90, 80), "A": Rect2(10, s.y-350, 90, 80),
 		"S": Rect2(100, s.y-350, 90, 80), "D": Rect2(190, s.y-350, 90, 80),
@@ -27,10 +32,25 @@ func _layout() -> void:
 		"HELP": Rect2(s.x-340, 360, 100, 70), "R": Rect2(s.x-450, 360, 100, 70), "LOG": Rect2(s.x-560, 360, 100, 70), "NEW": Rect2(s.x-670, 360, 100, 70)
 	}
 
+func _console_mode() -> bool:
+	return game != null and (game.control_mode or game.a02_lab.control_mode)
+
+func button_at(pixel: Vector2) -> String:
+	for label in buttons:
+		if buttons[label].has_point(pixel): return label
+	return ""
+
+func _process(_delta: float) -> void:
+	if game != null and console_layout != _console_mode():
+		console_layout = _console_mode()
+		release_all()
+
 func _draw() -> void:
 	for label in buttons:
 		var rect: Rect2 = buttons[label]
-		draw_style_box(_style(label == "FINE" and fine or label in contacts.values()), rect)
+		var style := _style(label == "FINE" and fine or label in contacts.values())
+		if _console_mode() and label in ["+","-"] and game.selected_device == null and game.a02_lab.selected == null: style.bg_color = Color(0.03,0.05,0.05,0.4)
+		draw_style_box(style,rect)
 		draw_string(ThemeDB.fallback_font, rect.position + Vector2(12, 45), {"W":"↑", "A":"←", "S":"↓", "D":"→", "FIRE":"발사", "E":"조작", "FINE":"1°", "F":"출력", "ESC":"종료", "MAP":"지도", "HELP":"도움", "R":"재시도", "LOG":"기록", "NEW":"새 게임"}.get(label,label), HORIZONTAL_ALIGNMENT_LEFT, -1, 26, Color.WHITE)
 
 func _style(on: bool) -> StyleBoxFlat:
@@ -73,6 +93,7 @@ func _aim(pixel: Vector2, select: bool) -> void:
 		event.position = pixel
 		event.pressed = true
 		event.button_index = MOUSE_BUTTON_LEFT
+		event.set_meta("console_touch",true)
 		game._input(event)
 
 func _activate(label: String) -> void:

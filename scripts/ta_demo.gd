@@ -2,6 +2,8 @@ extends "res://scripts/main.gd"
 ## Dedicated T/A entry point; the existing facility scene remains available unchanged.
 const Pointer = preload("res://scripts/camera_pointer.gd")
 const SAVE_VERSION := 1
+const ConsoleView = preload("res://scripts/ta_console_view.gd")
+var touch_controls: Control
 var layout: Dictionary
 var devices: Dictionary = {}
 var demo_doors: Dictionary = {}
@@ -14,6 +16,7 @@ var circuit_ready := false
 var restored := false
 var ending_elapsed := -1.0
 var control_mode := false
+var console_preview := false
 var suppress_fire_until_release := false
 var console_stage := ""
 var rail_selected := false
@@ -57,6 +60,7 @@ func _ready() -> void:
 	_build_laser()
 	build_demo_devices()
 	preload("res://assets/ta_demo_details.gd").build(self)
+	build_console_stations()
 	build_demo_ui()
 	var korean_theme := Theme.new()
 	korean_theme.default_font = preload("res://assets/fonts/NotoSansKR.ttf")
@@ -74,6 +78,7 @@ func _ready() -> void:
 	touch_layer.layer = 100
 	add_child(touch_layer)
 	var touch := preload("res://scripts/touch_controls.gd").new()
+	touch_controls = touch
 	touch_layer.add_child(touch)
 	touch.setup(self)
 
@@ -140,6 +145,33 @@ func build_demo_devices() -> void:
 	for phase in layout.stages["A-03"].sources:
 		var p: Array = layout.stages["A-03"].sources[phase]
 		pad(Vector3(p[0]-0.34,0.02,p[1]+0.38),phase)
+
+func build_console_stations() -> void:
+	terminals["A03-CONSOLE"] = Vector3(9,0,75)
+	_add_box("A03 CONSOLE BODY",terminals["A03-CONSOLE"]+Vector3.UP*0.45,Vector3(0.65,0.9,0.5),materials.metal,true,4)
+	for item in [["A-01",terminals["A01-CONSOLE"]],["A-02",a02_lab.console_point],["A-03",terminals["A03-CONSOLE"]]]:
+		var station: Node3D = preload("res://scenes/optical_console.tscn").instantiate()
+		add_child(station)
+		station.setup(self,item[0],item[1])
+	var console_mirrors: Array = a02_lab.mirrors.duplicate()
+	for device in devices.values():
+		if device.kind == "mirror" and String(device.get_meta("stage")).begins_with("A-") and device.rotatable: console_mirrors.append(device)
+	for device in console_mirrors:
+		var outline := MeshInstance3D.new()
+		var mesh := BoxMesh.new()
+		mesh.size = device.optical_size+Vector3(0.1,0.1,0.1)
+		outline.mesh = mesh
+		outline.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		outline.position.y = device.optical_size.y*0.5
+		var mat := _emissive_material(Color("ffd075"),1.5)
+		mat.cull_mode = BaseMaterial3D.CULL_FRONT
+		mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		outline.material_override = mat
+		outline.visible = false
+		device.add_child(outline)
+		device.selection_outline = outline
+	for label in find_children("*","Label3D",true,false):
+		if label.text == "A01-CONSOLE / E" or label.text.begins_with("A-02 광학 콘솔 /"): label.visible = false
 
 func pad(at: Vector3,text: String) -> void:
 	_add_box("FIRING PAD",at,Vector3(0.7,0.025,0.7),materials.yellow,false)
@@ -241,17 +273,18 @@ func _physics_process(delta: float) -> void:
 		if ending_elapsed >= 0 and ending_elapsed < 2: demo_lights[i].light_energy = 0.15 if int(ending_elapsed*4)%2 == 0 else 0.85
 	var sources: Array[Dictionary] = a02_lab.sources()
 	accepted_receiver_this_frame = ""
-	laser.update_beam(player.get_emitter_origin(),player.aim_position,player.firing and not control_mode and not a02_lab.control_mode and ending_elapsed < 0,delta,"red",sources)
+	laser.update_beam(player.get_emitter_origin(),player.aim_position,((player.firing and not control_mode and not a02_lab.control_mode) or (control_mode and console_preview and player.has_emitter and not blocked_by_ui(Vector2(-1,-1)))) and ending_elapsed < 0,delta,"red",sources)
 	check_sequence_reentry()
 	if progression.completed_stage_ids.has("A-02") and not completed.has("A-02"):
 		complete("A-02")
 	sync_demo()
-	if not control_mode and not a02_lab.control_mode:
+	if control_mode: ConsoleView.fit(self,console_stage)
+	elif a02_lab.control_mode: ConsoleView.fit(self,"A-02")
+	else:
 		if overview and room_id == "A-01":
-			camera.global_position = Vector3(43,32,49)
-			camera.look_at(Vector3(43,0,38))
-			camera.size = 31
+			ConsoleView.fit(self,"A-01")
 		else:
+			ConsoleView.restore_walls(self)
 			overview = false
 			camera.position = Vector3(0,11,4.0)
 			camera.rotation_degrees = Vector3(-70,0,0)
@@ -362,6 +395,7 @@ func _visible_from_player(point: Vector3,extra_exclude: Array[RID] = []) -> bool
 	return get_world_3d().direct_space_state.intersect_ray(query).is_empty()
 
 func blocked_by_ui(pixel: Vector2) -> bool:
+	if touch_controls != null and touch_controls.visible and touch_controls.button_at(pixel) != "": return true
 	return help_panel.visible or log_panel.visible or fullmap_overlay.visible or is_paused_overlay or hud_panel.get_global_rect().has_point(pixel) or minimap_panel.visible and minimap_panel.get_global_rect().has_point(pixel)
 
 func restore_fire_state() -> void:
@@ -390,6 +424,9 @@ func _interact() -> void:
 				else: _show_status("적합성 수신기를 먼저 활성화하십시오.")
 			"A01-CONSOLE":
 				if completed.has("T-04_TERMINAL_E"): enter_demo_console()
+			"A03-CONSOLE":
+				if completed.has("A-02"): enter_demo_console("A-03")
+				else: _show_status("A-02를 먼저 완료하십시오.")
 			"A03-HANDLE":
 				rail_selected = not rail_selected and completed.has("A-02")
 				_show_status("레일 선택 · 휠 0.25m 이동" if rail_selected else "레일 선택 해제")
@@ -408,7 +445,7 @@ func _interact() -> void:
 	var nearest: OpticalDevice
 	var best := 2.7
 	for d in devices.values():
-		if d.kind != "mirror" or d.get_meta("stage") == "A-01" or not d.rotatable: continue
+		if d.kind != "mirror" or String(d.get_meta("stage")).begins_with("A-") or not d.rotatable: continue
 		var distance: float = player.position.distance_to(d.position)
 		if distance < best:
 			nearest = d
@@ -420,23 +457,26 @@ func _interact() -> void:
 			selected_device = nearest
 			selected_device.set_selected(true)
 
-func enter_demo_console() -> void:
+func enter_demo_console(stage := "A-01") -> void:
 	clear_demo_selection()
 	control_mode = true
-	console_stage = "A-01"
+	console_preview = false
+	console_stage = stage
 	camera_saved = camera.global_transform
 	camera_saved_size = camera.size
-	camera.global_position = Vector3(43,32,49)
-	camera.look_at(Vector3(43,0,38))
-	camera.size = 31
+	ConsoleView.enter(self)
+	ConsoleView.fit(self,stage)
 	player.firing = false
 	player.velocity = Vector3.ZERO
 
 func exit_demo_console() -> void:
 	clear_demo_selection()
 	control_mode = false
+	console_preview = false
+	ConsoleView.restore_walls(self)
 	camera.global_transform = camera_saved
 	camera.size = camera_saved_size
+	camera.reset_physics_interpolation()
 	restore_fire_state()
 
 func clear_demo_selection() -> void:
@@ -455,6 +495,10 @@ func _input(event: InputEvent) -> void:
 				player.firing = false
 				_show_status("일시 정지 · Esc 재개" if is_paused_overlay else "검사 재개")
 			return
+		if event.keycode == KEY_F and control_mode:
+			console_preview = not console_preview and player.has_emitter
+			_show_status("콘솔 위치의 실제 L-07 출력 " + ("ON" if console_preview else "OFF"))
+			return
 		if event.keycode == KEY_R:
 			if event.shift_pressed: reset_demo(true)
 			else: reset_demo(false)
@@ -472,13 +516,13 @@ func _input(event: InputEvent) -> void:
 	if a02_lab.handle_input(event): return
 	if event is InputEventMouseButton and event.pressed and not blocked_by_ui(event.position):
 		if control_mode and event.button_index == MOUSE_BUTTON_LEFT:
-			var ray := Pointer.ray(camera,event.position)
-			var query := PhysicsRayQueryParameters3D.create(ray.origin,ray.origin+ray.direction*100,2)
-			var hit := get_world_3d().direct_space_state.intersect_ray(query)
-			var picked: OpticalDevice = hit.get("collider") as OpticalDevice
+			var allowed: Array = []
+			for device in devices.values():
+				if device.kind == "mirror" and device.rotatable and device.get_meta("stage") == console_stage: allowed.append(device)
+			var picked: OpticalDevice = ConsoleView.pick(self,event.position,allowed,bool(event.get_meta("console_touch",false)))
 			var same := picked == selected_device
 			clear_demo_selection()
-			if picked != null and picked.get_meta("stage","") == console_stage and picked.kind == "mirror" and not same:
+			if picked != null and picked.get_meta("stage","") == console_stage and picked.kind == "mirror" and picked.rotatable and not same:
 				selected_device = picked
 				picked.set_selected(true)
 		elif event.button_index in [MOUSE_BUTTON_WHEEL_UP,MOUSE_BUTTON_WHEEL_DOWN]:
@@ -584,15 +628,18 @@ func load_checkpoint() -> void:
 
 func update_demo_hud(delta: float) -> void:
 	message_timer -= delta
-	var goal: String = {"T-01":"신원 단말기 E","T-02":"L-07 지급대 E → R-N 직사","T-03":"거울 E/휠 → 1회 반사","T-04":"거울 2개 E/휠 → 2회 반사","T-04_TERMINAL_E":"T-04 검사 종료 단말기 E","A-01":"콘솔 E → 거울 3개 설정 → 발사 패드","A-02":"콘솔 → L-07 거치 E → 제어 R → 현장 레일 → 발사기 회수","A-03":"R-O1 → R-O2 → R-N / 레일 손잡이 E","A-REST":"A 회로 READY → 복구 단말기 E"}.get(next_stage(),"")
+	var goal: String = {"T-01":"신원 단말기 E","T-02":"L-07 지급대 E → R-N 직사","T-03":"거울 E/휠 → 1회 반사","T-04":"거울 2개 E/휠 → 2회 반사","T-04_TERMINAL_E":"T-04 검사 종료 단말기 E","A-01":"콘솔 E → 거울 3개 설정 → 발사 패드","A-02":"콘솔 → L-07 거치 E → 제어 R → 현장 레일 → 발사기 회수","A-03":"광학 콘솔 E: 거울 설정 → RO1 → RO2 → RN / 현장 레일 E","A-REST":"A 회로 READY → 복구 단말기 E"}.get(next_stage(),"")
 	var mode := "휴대 / 좌클릭 조사" if player.has_emitter else "L-07 미보유"
 	if a02_lab.docked: mode = "L-07 거치 / "+("지속 조사" if a02_lab.emitting else "정지")
 	if control_mode or a02_lab.control_mode: mode = "광학 콘솔 / 클릭 선택 · 휠 15° · Shift+휠 1° · Esc 종료"
 	hud_summary.text = "PROJECT: REFLECTION / T·A DEMO v1.0\n%s · %s\n목표: %s\nWASD · E 상호작용 · R 재시도 · H 도움말" % [room_id,mode,goal]
+	status_label.position.y = get_viewport().get_visible_rect().size.y-240 if control_mode or a02_lab.control_mode else 920
+	device_info_label.position.y = get_viewport().get_visible_rect().size.y-190 if control_mode or a02_lab.control_mode else 810
 	var selected: OpticalDevice = a02_lab.selected if a02_lab.control_mode else selected_device
 	device_info_label.text = "%s · %.0f°" % [selected.display_name,rad_to_deg(selected.rotation.y)] if selected != null else ""
+	if control_mode: device_info_label.text += "\nF / 출력: 실제 L-07 광선 · " + ("ON" if console_preview else "OFF")
 	if rail_selected: device_info_label.text = "A03 레일 %.2fm / 3m · 휠 0.25m" % (devices["A03-RAIL"].position.x-24)
-	if room_id == "A-03": device_info_label.text += "\n순서 %d/3 · R-U 선택 사항" % sequence
+	if room_id == "A-03" and not control_mode: device_info_label.text += "\n순서 %d/3 · R-U 선택 사항" % sequence
 	if room_id == "A-02": device_info_label.text += "\n제어 R %s · 최종 R %s · 레일 %.2f / 4m" % ["활성" if a02_lab.control.receiver_active else "대기","활성" if a02_lab.receiver.receiver_active else "대기",a02_lab.rail.position.x-19]
 	if selected == null and not control_mode and not a02_lab.control_mode:
 		for id in terminals:
@@ -604,6 +651,8 @@ func update_demo_hud(delta: float) -> void:
 	for door in layout.doors:
 		if near_point(Vector3(door.x,0,door.z),2):
 			device_info_label.text += "\n%s · %s" % [door.id,"해금 / 통과 가능" if not demo_doors[door.id].visible else "잠김 / 필요: "+door.unlock]
+	for station in [["A02 광학 제어 콘솔",a02_lab.console_point],["L-07 거치대",a02_lab.dock_point],["A02 레일 손잡이",a02_lab.handle_point]]:
+		if a02_lab.near(station[1]): device_info_label.text += "\n%s · E / 조작" % station[0]
 	var known: Array[String] = []
 	for room in layout.rooms:
 		if visited.has(room.id): known.append(room.id)

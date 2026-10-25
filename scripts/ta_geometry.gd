@@ -30,7 +30,10 @@ func build(world: Node3D) -> void:
 	channel([Rect2(34.5,31.5,3,10), Rect2(34.5,31.5,12,3), Rect2(43.5,31.5,3,13), Rect2(43.5,41.5,10,3)], [Vector2(36,41.5)])
 	channel([Rect2(10.5,33.5,3,12), Rect2(10.5,33.5,14,3), Rect2(21.5,33.5,3,14), Rect2(17.5,39.5,12,3)], [Vector2(12,45.5)])
 	channel([Rect2(9,59,2,12), Rect2(9,59,10,2), Rect2(14,61,2,10), Rect2(14,61,12,2), Rect2(24,61,2,11), Rect2(17,65,2,6), Rect2(17,65,11,2), Rect2(26,57,2,10)], [Vector2(10,71),Vector2(15,71),Vector2(18,71)])
-	for vault in game.layout.optical_vaults.values():
+	for stage in game.layout.optical_vaults:
+		# Screenshot request: remove only the extra T03 receiver rectangle, not its L duct.
+		if stage == "T-03": continue
+		var vault: Dictionary = game.layout.optical_vaults[stage]
 		for s in vault.walls:
 			segment(Vector2(s[0],s[1]), Vector2(s[2],s[3]), false, false)
 		for s in vault.slits:

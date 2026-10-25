@@ -156,9 +156,13 @@ func enter_control() -> void:
 	control_mode = true
 	game.puzzle_camera.set_physics_process(false)
 	game.camera.cull_mask = game.puzzle_camera.original_mask
-	game.camera.global_position = Vector3(18, 30, 47) if demo else ORIGIN + Vector3(10, 24, 13)
-	game.camera.look_at(Vector3(18, 0, 38) if demo else ORIGIN + Vector3(10, 0, 6), Vector3.UP)
-	game.camera.size = 31
+	if demo:
+		preload("res://scripts/ta_console_view.gd").enter(game)
+		preload("res://scripts/ta_console_view.gd").fit(game,"A-02")
+	else:
+		game.camera.global_position = ORIGIN + Vector3(10,24,13)
+		game.camera.look_at(ORIGIN + Vector3(10,0,6),Vector3.UP)
+		game.camera.size = 31
 	game.player.firing = false
 	game.player.velocity = Vector3.ZERO
 
@@ -169,8 +173,10 @@ func exit_control() -> void:
 		selected.set_selected(false)
 	selected = null
 	control_mode = false
+	if demo: preload("res://scripts/ta_console_view.gd").restore_walls(game)
 	game.camera.global_transform = camera_pose
 	game.camera.size = camera_size
+	game.camera.reset_physics_interpolation()
 	game.camera.cull_mask = camera_mask
 	game.puzzle_camera.set_physics_process(true)
 	game.optical_control.restore_fire_state()
@@ -181,9 +187,13 @@ func handle_input(event: InputEvent) -> bool:
 			exit_control()
 		elif event is InputEventMouseButton and event.pressed and not game.optical_control.blocked_by_ui(event.position):
 			if event.button_index == MOUSE_BUTTON_LEFT:
-				var ray := Pointer.ray(game.camera, event.position)
-				var hit := game.get_world_3d().direct_space_state.intersect_ray(PhysicsRayQueryParameters3D.create(ray.origin, ray.origin + ray.direction * 100, 6))
-				var picked: OpticalDevice = hit.get("collider") as OpticalDevice
+				var picked: OpticalDevice
+				if demo:
+					picked = preload("res://scripts/ta_console_view.gd").pick(game,event.position,mirrors,bool(event.get_meta("console_touch",false)))
+				else:
+					var ray := Pointer.ray(game.camera,event.position)
+					var hit := game.get_world_3d().direct_space_state.intersect_ray(PhysicsRayQueryParameters3D.create(ray.origin,ray.origin+ray.direction*100,6))
+					picked = hit.get("collider") as OpticalDevice
 				if selected != null:
 					selected.set_selected(false)
 				selected = picked if picked in mirrors and picked != selected else null

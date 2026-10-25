@@ -21,7 +21,7 @@ $smokeLog = Join-Path $validationPath 'runtime_smoke.log'
 & $enginePath --headless --path $PSScriptRoot --quit-after 4 --log-file $smokeLog
 Assert-CleanGodotRun $smokeLog $LASTEXITCODE
 
-$testNames = @('optics_math_test', 'progression_state_test', 'stage_catalog_test', 'tutorial_flow_test', 'quality_pass_test', 'energy_flow_test', 'navigation_test', 'exploration_test', 'room_visibility_test', 'camera_motion_test', 'a01_lab_test', 'a02_docking_test', 'camera_ui_test', 'optical_control_test', 'optical_rules_v51_test', 'representative_puzzle_test', 'asset_lock_test', 'ta_demo_test', 'ta_navigation_test', 'ta_controls_checkpoint_test')
+$testNames = @('optics_math_test', 'progression_state_test', 'stage_catalog_test', 'tutorial_flow_test', 'quality_pass_test', 'energy_flow_test', 'navigation_test', 'exploration_test', 'room_visibility_test', 'camera_motion_test', 'a01_lab_test', 'a02_docking_test', 'camera_ui_test', 'optical_control_test', 'optical_rules_v51_test', 'representative_puzzle_test', 'asset_lock_test', 'ta_demo_test', 'ta_navigation_test', 'ta_controls_checkpoint_test', 'touch_controls_test', 'console_interaction_test')
 foreach ($testName in $testNames) {
     $testLog = Join-Path $validationPath "$testName.log"
     & $enginePath --headless --path $PSScriptRoot --script "res://tests/$testName.gd" --log-file $testLog
@@ -30,6 +30,9 @@ foreach ($testName in $testNames) {
 
 if ($VisualReview) {
     New-Item -ItemType Directory -Force -Path (Join-Path $PSScriptRoot 'work/validation') | Out-Null
+    $consoleLog = Join-Path $validationPath 'console_interaction_render.log'
+    & $enginePath --path $PSScriptRoot --script res://tests/console_interaction_test.gd --log-file $consoleLog -- --visual-review
+    Assert-CleanGodotRun $consoleLog $LASTEXITCODE
     $taReviewLog = Join-Path $validationPath 'ta_demo_render.log'
     & $enginePath --path $PSScriptRoot --script res://tests/ta_demo_test.gd --log-file $taReviewLog -- --visual-review
     Assert-CleanGodotRun $taReviewLog $LASTEXITCODE
