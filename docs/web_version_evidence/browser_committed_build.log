@@ -1,0 +1,13 @@
+127.0.0.1 - - [25/Oct/2026 09:37:27] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 09:37:27] "GET /build.json?t=1792921047278 HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 09:37:27] "GET /builds/efd4b384b9d2de23387b8b24de2df0376c3f2b8d/index.html HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 09:37:27] "GET /builds/efd4b384b9d2de23387b8b24de2df0376c3f2b8d/index.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 09:37:27] "GET /builds/efd4b384b9d2de23387b8b24de2df0376c3f2b8d/index.png HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 09:37:27] "GET /builds/efd4b384b9d2de23387b8b24de2df0376c3f2b8d/index.pck HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 09:37:27] "GET /builds/efd4b384b9d2de23387b8b24de2df0376c3f2b8d/index.wasm HTTP/1.1" 200 -
+WASM initialized
+127.0.0.1 - - [25/Oct/2026 09:37:33] "GET /builds/efd4b384b9d2de23387b8b24de2df0376c3f2b8d/index.audio.worklet.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 09:37:33] "GET /builds/efd4b384b9d2de23387b8b24de2df0376c3f2b8d/index.audio.position.worklet.js HTTP/1.1" 200 -
+Capture canvas
+Multi-touch pressed
+PASS: exported WASM boot and browser multi-touch smoke (Chromium)

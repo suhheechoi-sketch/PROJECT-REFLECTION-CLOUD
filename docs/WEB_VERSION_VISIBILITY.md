@@ -4,7 +4,7 @@
 
 - 조사 기준 main: `304b7b49bb63ab9be92ce2399ed8f9291e159c63` (PR #5 병합). main 직접 수정/병합 없음.
 - `project.godot` 기본 실행은 `res://scenes/ta_demo.tscn`. Web 프리셋은 프로젝트 기본 씬을 사용한다. `scenes/main.tscn`은 보존용이며 이번 기본 실행이 아니다.
-- [Web game #9](https://github.com/suhheechoi-sketch/PROJECT-REFLECTION-CLOUD/actions/runs/40180131052) checkout 로그의 전체 SHA가 위 main과 일치한다. export 로그에 `ta_demo.gdc`, `ta_geometry.gdc`, `ta_console_station.gdc`, `ta_console_view.gdc`, `ta_demo.tscn.remap`, `optical_console.tscn.remap` 저장이 확인된다. build/deploy 모두 성공.
+- [Web game #9](https://github.com/suhheechoi-sketch/PROJECT-REFLECTION-CLOUD/actions/runs/40180131052) checkout 로그의 전체 SHA가 위 main과 일치한다. export 로그에 `ta_demo.gdc`, `ta_geometry.gdc`, `ta_console_station.gdc`, `ta_console_view.gdc`, `ta_demo.tscn.remap`, `optical_console.tscn.remap` 저장이 확인된다. build/deploy 모두 성공. [관련 원본 로그 발췌](web_version_evidence/run9_provenance.log)
 - #9 `github-pages` artifact ID `12594181280`, digest `sha256:effc4d4ee371272c4d97e905bbaba9ab0e951fde0946c429791037d8b1ea3c80`, head SHA는 위 main. `reflection-web` artifact ID `12593896530` 역시 같은 SHA.
 - 따라서 **PR5가 main이나 빌드에서 누락됐다는 증거는 없다.** 동일 main 소스로 Godot와 Chromium을 실행했을 때 지정 T03 사각형은 제거되어 있다. ㄱ자 통로, 수신기 좌표, 광학 계산은 유지된다.
 - 기존 배포는 항상 같은 `index.html`, `index.js`, `index.pck`, `index.wasm`을 사용했다. 빌드 식별 정보가 없어 오래된 문서/리소스 캐시 또는 재개된 탭과 새 배포를 구분할 수 없었다. 이는 확인된 배포 설계의 결함이다. **실제 사용자의 Safari 캐시가 원인이었는지는 확정하지 못했다.**
@@ -35,7 +35,7 @@
 | 회전 후 콘솔 시점 | [Godot](web_version_evidence/console_a01_pc.png) · [웹](web_version_evidence/web_a01_pc.png) |
 | 도움말 빌드 표시 | [로컬 수정 미리보기](web_version_evidence/web_help_build_preview.png) |
 
-증거의 첫 로컬 미리보기 빌드 표시는 작업 기반 checkout `304b7b4`다. 수정된 코드가 아직 커밋되지 않은 로컬 렌더 캡처이며 배포됐다는 뜻이 아니다. 이후 CI는 해당 실행에서 실제 checkout한 전체 SHA를 자동으로 기록한다. `build.json`, Actions checkout SHA, 게임 도움말의 7자 Build를 함께 대조한다.
+증거의 첫 로컬 미리보기 빌드 표시는 작업 기반 checkout `304b7b4`다. 수정된 코드가 아직 커밋되지 않은 로컬 렌더 캡처이며 배포됐다는 뜻이 아니다. 커밋 후 `efd4b38` 소스를 다시 export하여 PCK SHA 일치와 Chromium 실제 도움말 표시도 확인했다. [커밋된 소스의 실제 화면](web_version_evidence/web_help_build_committed.png) · [PCK 확인](web_version_evidence/packed_committed_build.log) · [브라우저 확인](web_version_evidence/browser_committed_build.log). 이후 CI는 해당 실행에서 실제 checkout한 전체 SHA를 자동으로 기록한다. `build.json`, Actions checkout SHA, 게임 도움말의 7자 Build를 함께 대조한다.
 
 ## 검증
 
