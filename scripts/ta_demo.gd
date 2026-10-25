@@ -4,6 +4,9 @@ const Pointer = preload("res://scripts/camera_pointer.gd")
 const SAVE_VERSION := 1
 const ConsoleView = preload("res://scripts/ta_console_view.gd")
 var touch_controls: Control
+var beam_observer: PanelContainer
+var platform_ui: CanvasLayer
+var feedback: Node3D
 var layout: Dictionary
 var devices: Dictionary = {}
 var demo_doors: Dictionary = {}
@@ -40,11 +43,14 @@ var demo_lights: Array[OmniLight3D] = []
 var atmosphere_time := 0.0
 
 func _ready() -> void:
-	ThemeDB.fallback_font = preload("res://assets/fonts/NotoSansKR.ttf")
+	var readable_font := FontVariation.new()
+	readable_font.base_font = preload("res://assets/fonts/NotoSansKR.ttf")
+	readable_font.variation_opentype = {TextServerManager.get_primary_interface().name_to_tag("wght"):550.0}
+	ThemeDB.fallback_font = readable_font
 	set_meta("ta_demo", true)
 	layout = JSON.parse_string(FileAccess.get_file_as_string("res://data/ta_demo/layout.json"))
 	_build_materials()
-	materials.a_floor = _material(Color("28382c"),0.2,0.95)
+	materials.a_floor = _material(Color("34483a"),0.2,0.95)
 	materials.tutorial_floor = _material(Color("a4b8b3"),0.15,0.9)
 	_build_environment()
 	demo_geometry = preload("res://scripts/ta_geometry.gd").new()
@@ -61,12 +67,16 @@ func _ready() -> void:
 	build_demo_devices()
 	preload("res://assets/ta_demo_details.gd").build(self)
 	build_console_stations()
+	preload("res://assets/presentation_v1/industrial_details.gd").build(self)
 	build_demo_ui()
 	var korean_theme := Theme.new()
-	korean_theme.default_font = preload("res://assets/fonts/NotoSansKR.ttf")
+	korean_theme.default_font = readable_font
 	hud_root.theme = korean_theme
 	for label in find_children("*", "Label3D", true, false):
 		label.font = korean_theme.default_font
+		label.outline_size = 3
+		label.font_size = maxi(30,label.font_size)
+		if devices.has(label.text): label.visible = false
 	wall_visibility = preload("res://scripts/wall_visibility.gd").new()
 	add_child(wall_visibility)
 	wall_visibility.setup(self,player,camera)
@@ -74,6 +84,9 @@ func _ready() -> void:
 	sync_demo()
 	_show_status("DIRECTOR: 피험자 07. 광학 적합성 검사를 시작합니다. 신원 단말기에서 E.")
 	build_audio()
+	feedback = preload("res://scripts/puzzle_feedback.gd").new()
+	add_child(feedback)
+	feedback.setup(self)
 	var touch_layer := CanvasLayer.new()
 	touch_layer.layer = 100
 	add_child(touch_layer)
@@ -81,6 +94,12 @@ func _ready() -> void:
 	touch_controls = touch
 	touch_layer.add_child(touch)
 	touch.setup(self)
+	beam_observer = preload("res://scenes/beam_observer.tscn").instantiate()
+	hud_root.add_child(beam_observer)
+	beam_observer.setup(self)
+	platform_ui = preload("res://scenes/input_preferences.tscn").instantiate()
+	add_child(platform_ui)
+	platform_ui.setup(self,checkpoint_enabled)
 
 func _relocate_device_position(_label: String, source: Vector3) -> Vector3:
 	return source
@@ -201,6 +220,8 @@ func build_demo_ui() -> void:
 	hud_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	hud_root.add_child(hud_panel)
 	hud_summary = _make_label("",22,Color("a8e9e2"))
+	hud_summary.custom_minimum_size.x = 740
+	hud_summary.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	hud_panel.add_child(hud_summary)
 	status_label = _make_label("",23,Color("ffd075"))
 	status_label.position = Vector2(24,920)
@@ -222,7 +243,7 @@ func build_demo_ui() -> void:
 		if info is Dictionary:
 			build_text = "Build: %s / Version: %s" % [str(info.get("commit", "local")).left(7), info.get("version", "T/A DEMO v1.1")]
 	print(build_text)
-	help_panel.add_child(_make_label("SUBJECT 07 / 조작 안내\n" + build_text + "\n\n터치: 화살표 이동 · 화면 터치/드래그 조준 · 발사 유지\n조작=E · ±=회전/레일 · 1°=정밀 전환 · 출력=F · 종료=Esc\nWASD 이동 · 마우스 조준 · 좌클릭 유지 발사\nE 단말기 / 가까운 거울 선택 · 휠 15° / Shift+휠 1°\nA01/A02 콘솔 E → 클릭 거울 선택 → 휠 → Esc 종료\nA02 거치대 E 장착/회수 · F 조사 정지/재개\n레일 손잡이 E → 현장 휠 0.25m\nR 현재 퍼즐 재시도 · Shift+R 전체 초기화\nTab 탐색 지도 · M 미니맵 · L 기록 · H/F1 도움말\nEsc 일시 정지 / 창 닫기: 완료 단계 체크포인트 자동 저장",24,Color.WHITE))
+	help_panel.add_child(_make_label("SUBJECT 07 / 조작 안내\n"+build_text+"\n\nCOMPUTER: WASD 이동 · 마우스 조준 · 좌클릭 발사\nMOBILE: 화살표 이동 · 화면 조준 · 발사 유지\nE / 조작: T 거울 직접 선택 · A 콘솔 진입\n콘솔: 거울 클릭/터치 · 휠/± 15° · Shift/1° 정밀\n빈 공간: 선택 해제 · Esc / 종료: 탐색 복귀\nA02: 거치대 E 장착/회수 · F/출력 ON/OFF\n레일: 현장 손잡이 E · 휠/± 0.25m\nR 재시도 · Shift+R 전체 초기화 · H 도움말\nTab 지도 · M 미니맵 · L 기록\n조작 / SETTINGS: 입력 방식 · 관측 2D 전환",24,Color.WHITE))
 	log_panel = PanelContainer.new()
 	log_panel.position = Vector2(400,250)
 	log_panel.size = Vector2(1100,550)
@@ -261,6 +282,7 @@ func build_demo_ui() -> void:
 	overlay.color = Color(0,0,0,0)
 	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	hud_root.add_child(overlay)
+	for panel in [hud_panel,help_panel,log_panel,minimap_panel]: _style_panel(panel,Color("537f78"))
 	ending_label = _make_label("",42,Color("a8e9e2"))
 	ending_label.position = Vector2(430,400)
 	ending_label.size = Vector2(1100,300)
@@ -268,7 +290,7 @@ func build_demo_ui() -> void:
 	hud_root.add_child(ending_label)
 
 func _physics_process(delta: float) -> void:
-	if is_paused_overlay: return
+	if is_paused_overlay or (platform_ui != null and platform_ui.is_open()): return
 	room_id = current_room()
 	if room_id == "A-LOBBY" and not visited.has(room_id):
 		_show_status("DIRECTOR: 반사 실험동. A 회로를 복구하십시오. [기록 07: 입장 기록 없음]")
@@ -287,14 +309,11 @@ func _physics_process(delta: float) -> void:
 	if control_mode: ConsoleView.fit(self,console_stage)
 	elif a02_lab.control_mode: ConsoleView.fit(self,"A-02")
 	else:
-		if overview and room_id == "A-01":
-			ConsoleView.fit(self,"A-01")
-		else:
-			ConsoleView.restore_walls(self)
-			overview = false
-			camera.position = Vector3(0,11,4.0)
-			camera.rotation_degrees = Vector3(-70,0,0)
-			camera.size = 18
+		ConsoleView.restore_walls(self)
+		overview = false
+		camera.position = Vector3(0,11,4.0)
+		camera.rotation_degrees = Vector3(-70,0,0)
+		camera.size = 18
 	if selected_device != null and not control_mode and player.position.distance_to(selected_device.position) > 4.5:
 		clear_demo_selection()
 	if not near_point(terminals["A03-HANDLE"],2.0): rail_selected = false
@@ -400,7 +419,13 @@ func _visible_from_player(point: Vector3,extra_exclude: Array[RID] = []) -> bool
 	query.exclude = [player.get_rid()]+extra_exclude
 	return get_world_3d().direct_space_state.intersect_ray(query).is_empty()
 
+func observer_hit(pixel: Vector2) -> bool:
+	return beam_observer != null and beam_observer.visible and beam_observer.get_global_rect().has_point(pixel)
+
 func blocked_by_ui(pixel: Vector2) -> bool:
+	if platform_ui != null:
+		if platform_ui.is_open() or platform_ui.settings_button.get_global_rect().has_point(pixel): return true
+	if observer_hit(pixel): return true
 	if touch_controls != null and touch_controls.visible and touch_controls.button_at(pixel) != "": return true
 	return help_panel.visible or log_panel.visible or fullmap_overlay.visible or is_paused_overlay or hud_panel.get_global_rect().has_point(pixel) or minimap_panel.visible and minimap_panel.get_global_rect().has_point(pixel)
 
@@ -491,6 +516,11 @@ func clear_demo_selection() -> void:
 
 func _input(event: InputEvent) -> void:
 	if player == null: return
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT and observer_hit(event.position):
+		suppress_fire_until_release = true
+		player.firing = false
+		return
+	if platform_ui != null and platform_ui.is_open(): return
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_ESCAPE:
 			if control_mode: exit_demo_console()
@@ -511,11 +541,11 @@ func _input(event: InputEvent) -> void:
 			return
 		if is_paused_overlay or ending_elapsed >= 0: return
 		match event.keycode:
+			KEY_F2: platform_ui.open()
 			KEY_H,KEY_F1: help_panel.visible = not help_panel.visible
 			KEY_L: log_panel.visible = not log_panel.visible
 			KEY_TAB: fullmap_overlay.visible = not fullmap_overlay.visible
 			KEY_M: minimap_panel.visible = not minimap_panel.visible
-			KEY_V: overview = not overview and room_id == "A-01" and not control_mode
 			KEY_E:
 				if not blocked_by_ui(Vector2(-1,-1)): _interact()
 	if is_paused_overlay or ending_elapsed >= 0 or blocked_by_ui(Vector2(-1,-1)): return
@@ -541,6 +571,7 @@ func _input(event: InputEvent) -> void:
 				else: selected_device.rotate_steps(steps)
 
 func reset_demo(full: bool) -> void:
+	if beam_observer != null: beam_observer.hide_now()
 	if control_mode: exit_demo_console()
 	a02_lab.exit_control()
 	clear_demo_selection()
@@ -580,6 +611,7 @@ func reset_demo(full: bool) -> void:
 	player.firing = false
 	player.reset_physics_interpolation()
 	sync_demo()
+	if feedback != null: feedback.reset_visuals()
 	save_checkpoint()
 	_show_status("검사 장치를 초기화했습니다. 완료 단계는 보존됩니다.")
 
@@ -666,8 +698,8 @@ func update_demo_hud(delta: float) -> void:
 	objective_label.text = "체크포인트 %d/8\nA 회로 %s\nTab 방문 구역" % [completed.size(),"RESTORED" if restored else ("READY" if circuit_ready else "OFFLINE")]
 	log_label.text = "DIRECTOR / FACILITY 17\n"+"\n".join(history.slice(maxi(0,history.size()-12)))
 	# Overlays safely stop movement and held firing without stopping the UI.
-	if ending_elapsed < 0: player.set_physics_process(not (help_panel.visible or log_panel.visible or fullmap_overlay.visible))
-	if help_panel.visible or log_panel.visible or fullmap_overlay.visible: player.firing = false
+	if ending_elapsed < 0: player.set_physics_process(not (help_panel.visible or log_panel.visible or fullmap_overlay.visible or is_paused_overlay or (platform_ui != null and platform_ui.is_open())))
+	if help_panel.visible or log_panel.visible or fullmap_overlay.visible or (platform_ui != null and platform_ui.is_open()): player.firing = false
 
 func _show_status(message: String) -> void:
 	if status_label != null: status_label.text = message
@@ -757,3 +789,9 @@ func _add_area_light(at: Vector3,color: Color,energy: float,radius: float) -> vo
 	super._add_area_light(at,color,energy,radius)
 	var light := get_child(get_child_count()-1) as OmniLight3D
 	if light != null and at.z >= 26: demo_lights.append(light)
+
+func _make_label(text_value: String, font_size: int, color: Color) -> Label:
+	var label: Label = super._make_label(text_value,ceili(font_size*1.10),color)
+	label.add_theme_constant_override("outline_size",2)
+	label.add_theme_color_override("font_outline_color",Color(0.015,0.03,0.03,0.9))
+	return label

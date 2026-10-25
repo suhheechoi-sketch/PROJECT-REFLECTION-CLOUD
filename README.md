@@ -1,5 +1,7 @@
 # PROJECT: REFLECTION — T/A DEMO v1.0
 
+레이저 관측·시각/입력 개선: [구현·전후 화면·검증 범위](docs/BEAM_OBSERVER_PRESENTATION.md). 첫 실행 COMPUTER/MOBILE 선택, F2 설정, 시야 밖 실제 광선 종점만 관측합니다.
+
 웹 빌드 식별·캐시 격리: [조사 결과, 실제 native/웹 전후 화면 및 실행 방법](docs/WEB_VERSION_VISIBILITY.md). 도움말에서 실제 checkout Build를 확인할 수 있습니다.
 
 최신 콘솔 개선: [T03 지정 차폐실 제거·A01/A02/A03 광학 콘솔·PC/터치 검증](docs/OPTICAL_CONSOLE_REVISION.md). A 일반 거울은 콘솔 E/조작 진입 후 클릭/터치로 선택합니다. T 근접 학습과 현장 레일 조작은 유지합니다.

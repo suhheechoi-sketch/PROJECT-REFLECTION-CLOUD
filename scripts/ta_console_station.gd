@@ -15,6 +15,10 @@ func setup(world: Node3D, room: String, at: Vector3) -> void:
 	led = game._emissive_material(Color("55b7b0"),1.5)
 	box(Vector3(0.43,1.07,0.12),Vector3(0.12,0.12,0.12),led)
 	for x in [-0.27,0.0,0.27]: box(Vector3(x,1.06,-0.22),Vector3(0.14,0.07,0.12),game.materials.yellow)
+	# CRT bezel, cable drops and toggle switches are visual-only.
+	for z in [-0.02,0.08]: box(Vector3(-0.38,0.30,z),Vector3(0.06,0.55,0.04),game.materials.dark)
+	for x in [-0.28,0.28]: box(Vector3(x,1.12,-0.30),Vector3(0.04,0.10,0.04),game.materials.cyan)
+	for y in [1.18,1.26,1.34]: box(Vector3(0, y, -0.012),Vector3(0.48,0.018,0.012),game.materials.dark)
 	var label := Label3D.new()
 	label.text = stage+" / OPTICAL CONTROL\n광학 제어 콘솔 · E / 조작"
 	label.position = Vector3(0,2.0,0)

@@ -1,0 +1,55 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+Build: 85dd79c / Version: T/A DEMO v1.1
+PASS CONSOLE: only the six specified vault colliders removed; all other structures and L duct unchanged
+PASS CONSOLE: T03 receiver position and reflected-hit condition unchanged
+PASS CONSOLE: A01 E immediately enters existing V-style view
+PASS CONSOLE: console restricts normal locomotion and firing
+PASS CONSOLE: PC click selects and outlines mirror
+PASS CONSOLE: HUD click does not deselect
+PASS CONSOLE: receiver click deselects without leaving console
+PASS CONSOLE: another mirror can be selected
+PASS CONSOLE: floor click clears selection and highlight but keeps mode
+PASS CONSOLE: unselected wheel does nothing
+PASS CONSOLE: console uses real handheld L07 origin and existing reflection engine
+PASS CONSOLE: rotation updates live optical collision path
+PASS CONSOLE: Esc clears selection without resetting mirror
+PASS CONSOLE: Esc restores saved camera transform
+PASS CONSOLE: console exit preserves real receiver latch and puzzle progress
+PASS CONSOLE: exit restores normal wall visibility
+PASS CONSOLE: existing A02 console still enters
+PASS CONSOLE: A02 mirror click selects
+PASS CONSOLE: A02 empty click clears selection only
+PASS CONSOLE: touch E enters new accessible A03 console
+PASS CONSOLE: touch selects A03 ordinary mirror
+PASS CONSOLE: touch + rotates selected mirror 15 degrees without deselecting
+PASS CONSOLE: rotation does not alter other mirrors
+PASS CONSOLE: touch fine - rotates one degree
+PASS CONSOLE: all mirrors/receivers outside HUD at (1920, 1080) A-01
+PASS CONSOLE: all mirrors/receivers outside HUD at (1920, 1080) A-02
+PASS CONSOLE: device visible and outside UI at (1920, 1080) A03-M1
+PASS CONSOLE: device visible and outside UI at (1920, 1080) A03-M2
+PASS CONSOLE: device visible and outside UI at (1920, 1080) A03-M3
+PASS CONSOLE: device visible and outside UI at (1920, 1080) A03-M4
+PASS CONSOLE: device visible and outside UI at (1920, 1080) A03-RAIL
+PASS CONSOLE: device visible and outside UI at (1920, 1080) A03-RN
+PASS CONSOLE: device visible and outside UI at (1920, 1080) A03-RO1
+PASS CONSOLE: device visible and outside UI at (1920, 1080) A03-RO2
+PASS CONSOLE: all mirrors/receivers outside HUD at (1440, 1080) A-01
+PASS CONSOLE: all mirrors/receivers outside HUD at (1440, 1080) A-02
+PASS CONSOLE: device visible and outside UI at (1440, 1080) A03-M1
+PASS CONSOLE: device visible and outside UI at (1440, 1080) A03-M2
+PASS CONSOLE: device visible and outside UI at (1440, 1080) A03-M3
+PASS CONSOLE: device visible and outside UI at (1440, 1080) A03-M4
+PASS CONSOLE: device visible and outside UI at (1440, 1080) A03-RAIL
+PASS CONSOLE: device visible and outside UI at (1440, 1080) A03-RN
+PASS CONSOLE: device visible and outside UI at (1440, 1080) A03-RO1
+PASS CONSOLE: device visible and outside UI at (1440, 1080) A03-RO2
+PASS CONSOLE: external touch deselects but keeps console
+PASS CONSOLE: fixed rail cannot be rotated from console
+PASS CONSOLE: touch exit returns to exploration without held movement
+PASS CONSOLE: A03 field E cannot bypass console selection restriction
+CONSOLE: 48 checks / 0 failures

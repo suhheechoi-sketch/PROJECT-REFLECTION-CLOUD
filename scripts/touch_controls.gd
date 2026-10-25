@@ -51,7 +51,7 @@ func _draw() -> void:
 		var style := _style(label == "FINE" and fine or label in contacts.values())
 		if _console_mode() and label in ["+","-"] and game.selected_device == null and game.a02_lab.selected == null: style.bg_color = Color(0.03,0.05,0.05,0.4)
 		draw_style_box(style,rect)
-		draw_string(ThemeDB.fallback_font, rect.position + Vector2(12, 45), {"W":"↑", "A":"←", "S":"↓", "D":"→", "FIRE":"발사", "E":"조작", "FINE":"1°", "F":"출력", "ESC":"종료", "MAP":"지도", "HELP":"도움", "R":"재시도", "LOG":"기록", "NEW":"새 게임"}.get(label,label), HORIZONTAL_ALIGNMENT_LEFT, -1, 26, Color.WHITE)
+		draw_string(ThemeDB.fallback_font, rect.position + Vector2(12, 45), {"W":"↑", "A":"←", "S":"↓", "D":"→", "FIRE":"발사", "E":"조작", "FINE":"1°", "F":"출력", "ESC":"종료", "MAP":"지도", "HELP":"도움", "R":"재시도", "LOG":"기록", "NEW":"새 게임"}.get(label,label), HORIZONTAL_ALIGNMENT_LEFT, -1, 28, Color.WHITE)
 
 func _style(on: bool) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
@@ -63,6 +63,11 @@ func _style(on: bool) -> StyleBoxFlat:
 func _input(event: InputEvent) -> void:
 	if not visible:
 		return
+	# Let Godot's GUI receive settings touches; do not steal them as world aiming.
+	if event is InputEventScreenTouch:
+		if event.pressed and (game.observer_hit(event.position) or (game.platform_ui != null and game.platform_ui.settings_button.get_global_rect().has_point(event.position))): return
+		if not event.pressed and not contacts.has(event.index): return
+	elif event is InputEventScreenDrag and not contacts.has(event.index): return
 	if event is InputEventScreenTouch:
 		if event.pressed:
 			var label := "AIM"

@@ -142,7 +142,7 @@ func retrieve() -> void:
 func sources() -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
 	if docked and emitting and ready_to_use():
-		result.append({"origin": dock_point + Vector3.UP * 1.15, "direction": Vector3.FORWARD, "channel": channel, "energy": 1.0, "active": true})
+		result.append({"source_id":"a02-dock","origin": dock_point + Vector3.UP * 1.15, "direction": Vector3.FORWARD, "channel": channel, "energy": 1.0, "active": true})
 	return result
 
 func enter_control() -> void:

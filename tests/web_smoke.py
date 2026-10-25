@@ -32,12 +32,35 @@ try:
         page.wait_for_function("!document.querySelector('#status')", timeout=120000)
         print("WASM initialized", flush=True)
         page.wait_for_timeout(4000)
-        # Canvas logical size remains 1920x1080; convert positions to CSS coordinates.
-        print("Capture canvas", flush=True)
+        # Convert the letterboxed logical 1920x1080 game area to browser pixels.
         box = page.locator("#canvas").bounding_box()
         def point(x, y, identifier):
             scale = min(box["width"] / 1920, box["height"] / 1080)
             return {"x": box["x"] + (box["width"]-1920*scale)/2 + x*scale, "y": box["y"] + (box["height"]-1080*scale)/2 + y*scale, "id": identifier}
+        shell.screenshot(path=str(root / "work/validation/web_input_choice.png"))
+        page.locator("#canvas").focus()
+        with shell.expect_console_message(predicate=lambda msg: "INPUT MODE: COMPUTER" in msg.text, timeout=30000):
+            shell.keyboard.press("c")
+        shell.keyboard.down("w")
+        page.wait_for_timeout(300)
+        shell.keyboard.up("w")
+        shell.screenshot(path=str(root / "work/validation/web_computer_mode.png"))
+        shell.keyboard.press("F2")
+        page.wait_for_timeout(300)
+        # ScreenTouch, with project mouse emulation disabled: verify the actual mobile choice.
+        with shell.expect_console_message(predicate=lambda msg: "INPUT MODE: MOBILE" in msg.text, timeout=30000):
+            mobile = point(960,605,0)
+            shell.touchscreen.tap(mobile["x"],mobile["y"])
+        # In MOBILE, the custom movement layer must let the standard settings GUI receive touch.
+        settings = point(144,236,0)
+        shell.touchscreen.tap(settings["x"],settings["y"])
+        with shell.expect_console_message(predicate=lambda msg: "INPUT MODE: COMPUTER" in msg.text, timeout=30000):
+            shell.keyboard.press("c")
+        shell.keyboard.press("F2")
+        page.wait_for_timeout(300)
+        with shell.expect_console_message(predicate=lambda msg: "INPUT MODE: MOBILE" in msg.text, timeout=30000):
+            shell.touchscreen.tap(mobile["x"],mobile["y"])
+        print("Capture canvas", flush=True)
         cdp = context.new_cdp_session(shell)
         cdp.send("Input.dispatchTouchEvent", {"type": "touchStart", "touchPoints": [point(235, 770, 0), point(850, 550, 1), point(1835, 785, 2)]})
         page.wait_for_timeout(1500)
