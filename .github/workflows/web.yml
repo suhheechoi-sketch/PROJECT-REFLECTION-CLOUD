@@ -12,6 +12,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - name: Install Godot 4.7.2 and web templates
@@ -19,6 +20,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p work/engine
+          touch work/.gdignore
           cd work/engine
           base=https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable
           curl -fLO "$base/Godot_v4.7.2-stable_linux.x86_64.zip"
@@ -33,13 +35,20 @@ jobs:
           echo "GODOT=$PWD/Godot_v4.7.2-stable_linux.x86_64" >> "$GITHUB_ENV"
       - name: Import and regression tests
         run: bash VERIFY_REFLECTION.sh --import
+      - name: Tutorial physics timing regression
+        run: |
+          # Four render frames per physics tick reproduces the original CI race.
+          "$GODOT" --headless --path . --fixed-fps 240 --script res://tests/tutorial_flow_test.gd > work/validation/tutorial_fast_render.log 2>&1
+          cat work/validation/tutorial_fast_render.log
+          ! grep -En 'SCRIPT ERROR:|^ERROR:|^FAIL' work/validation/tutorial_fast_render.log
       - name: Export single-threaded Compatibility web game
         run: |
+          set -euo pipefail
           export XDG_DATA_HOME="$PWD/work/godot-data"
           mkdir -p work/web
-          "$GODOT" --headless --path . --export-release Web work/web/index.html
-          test -s work/web/index.wasm
-          test -s work/web/index.pck
+          "$GODOT" --headless --path . --export-release Web work/web/index.html 2>&1 | tee work/validation/web_export.log
+          ! grep -En 'SCRIPT ERROR:|^ERROR:|^FAIL' work/validation/web_export.log
+          python tests/validate_web_export.py work/web
           touch work/web/.nojekyll
           cp assets/fonts/OFL.txt work/web/NotoSansKR-OFL.txt
           cp licenses/GODOT-LICENSE.txt work/web/GODOT-LICENSE.txt
