@@ -216,7 +216,13 @@ func build_demo_ui() -> void:
 	help_panel.size = Vector2(1100,500)
 	help_panel.visible = false
 	hud_root.add_child(help_panel)
-	help_panel.add_child(_make_label("SUBJECT 07 / 조작 안내\n터치: 화살표 이동 · 화면 터치/드래그 조준 · 발사 유지\n조작=E · ±=회전/레일 · 1°=정밀 전환 · 출력=F · 종료=Esc\nWASD 이동 · 마우스 조준 · 좌클릭 유지 발사\nE 단말기 / 가까운 거울 선택 · 휠 15° / Shift+휠 1°\nA01/A02 콘솔 E → 클릭 거울 선택 → 휠 → Esc 종료\nA02 거치대 E 장착/회수 · F 조사 정지/재개\n레일 손잡이 E → 현장 휠 0.25m\nR 현재 퍼즐 재시도 · Shift+R 전체 초기화\nTab 탐색 지도 · M 미니맵 · L 기록 · H/F1 도움말\nEsc 일시 정지 / 창 닫기: 완료 단계 체크포인트 자동 저장",24,Color.WHITE))
+	var build_text := "Build: local / Version: T/A DEMO v1.1"
+	if FileAccess.file_exists("res://data/build_info.json"):
+		var info = JSON.parse_string(FileAccess.get_file_as_string("res://data/build_info.json"))
+		if info is Dictionary:
+			build_text = "Build: %s / Version: %s" % [str(info.get("commit", "local")).left(7), info.get("version", "T/A DEMO v1.1")]
+	print(build_text)
+	help_panel.add_child(_make_label("SUBJECT 07 / 조작 안내\n" + build_text + "\n\n터치: 화살표 이동 · 화면 터치/드래그 조준 · 발사 유지\n조작=E · ±=회전/레일 · 1°=정밀 전환 · 출력=F · 종료=Esc\nWASD 이동 · 마우스 조준 · 좌클릭 유지 발사\nE 단말기 / 가까운 거울 선택 · 휠 15° / Shift+휠 1°\nA01/A02 콘솔 E → 클릭 거울 선택 → 휠 → Esc 종료\nA02 거치대 E 장착/회수 · F 조사 정지/재개\n레일 손잡이 E → 현장 휠 0.25m\nR 현재 퍼즐 재시도 · Shift+R 전체 초기화\nTab 탐색 지도 · M 미니맵 · L 기록 · H/F1 도움말\nEsc 일시 정지 / 창 닫기: 완료 단계 체크포인트 자동 저장",24,Color.WHITE))
 	log_panel = PanelContainer.new()
 	log_panel.position = Vector2(400,250)
 	log_panel.size = Vector2(1100,550)

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
+<link rel="icon" href="data:,">
+<title>PROJECT: REFLECTION</title>
+<style>html,body,iframe{margin:0;width:100%;height:100%;border:0;background:#091310;color:#c8eee1}iframe{display:block}html,body{overflow:hidden;overscroll-behavior:none}#status{position:absolute;top:40%;width:100%;text-align:center;font:16px sans-serif}#update{position:fixed;top:4px;right:4px;z-index:2}</style>
+<div id="status">최신 빌드 확인 중…</div><button id="update" hidden>새 빌드 실행</button>
+<script>
+'use strict';
+let current;
+async function latest() {
+ const response = await fetch('build.json?t=' + Date.now(), {cache:'no-store'});
+ if (!response.ok) throw Error('Build manifest HTTP ' + response.status);
+ const build = await response.json();
+ if (!/^[a-f0-9]{40}$/.test(build.commit) || build.entry !== `builds/${build.commit}/index.html`) throw Error('Invalid build manifest');
+ return build;
+}
+async function boot() {
+ // This game does not use a Service Worker. Remove only registrations scoped to this project.
+ if ('serviceWorker' in navigator) {
+  const scope = new URL('./', location.href).href;
+  for (const registration of await navigator.serviceWorker.getRegistrations()) {
+   if (registration.scope.startsWith(scope)) await registration.unregister();
+  }
+ }
+ const build = await latest(); current = build.commit;
+ const frame = document.createElement('iframe'); frame.id='game'; frame.title='PROJECT: REFLECTION'; frame.allow='autoplay; fullscreen'; frame.src=build.entry;
+ document.body.append(frame); document.querySelector('#status').remove();
+ document.title = 'REFLECTION · ' + current.slice(0,7);
+}
+async function check() {
+ if (!current) return;
+ try { const build = await latest(); if(build.commit !== current) {
+  const button=document.querySelector('#update');button.hidden=false;
+  button.onclick=()=>location.reload();
+ } } catch (_) { /* Keep a running game during temporary network failure. */ }
+}
+boot().catch(error=>document.querySelector('#status').textContent='빌드 로딩 실패: '+error.message);
+addEventListener('pageshow',check);document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
+setInterval(check,60000);
+</script></html>

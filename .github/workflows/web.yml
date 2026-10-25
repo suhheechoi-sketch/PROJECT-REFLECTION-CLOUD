@@ -33,6 +33,8 @@ jobs:
           mkdir -p ../godot-data/godot/export_templates/4.7.2.stable
           cp unpacked/templates/web* ../godot-data/godot/export_templates/4.7.2.stable/
           echo "GODOT=$PWD/Godot_v4.7.2-stable_linux.x86_64" >> "$GITHUB_ENV"
+      - name: Stamp actual checkout commit
+        run: python scripts/web/prepare_build.py
       - name: Import and regression tests
         run: bash VERIFY_REFLECTION.sh --import
       - name: Tutorial physics timing regression
@@ -45,18 +47,25 @@ jobs:
         run: |
           set -euo pipefail
           export XDG_DATA_HOME="$PWD/work/godot-data"
+          rm -rf work/web
           mkdir -p work/web
           "$GODOT" --headless --path . --export-release Web work/web/index.html 2>&1 | tee work/validation/web_export.log
           ! grep -En 'SCRIPT ERROR:|^ERROR:|^FAIL' work/validation/web_export.log
           python tests/validate_web_export.py work/web
+          "$GODOT" --headless --main-pack work/web/index.pck --script "$PWD/tests/web_pack_check.gd" -- "$(git rev-parse HEAD)" > work/validation/packed_build.log 2>&1
+          cat work/validation/packed_build.log
+          ! grep -En 'SCRIPT ERROR:|^ERROR:|^FAIL' work/validation/packed_build.log
           touch work/web/.nojekyll
           cp assets/fonts/OFL.txt work/web/NotoSansKR-OFL.txt
           cp licenses/GODOT-LICENSE.txt work/web/GODOT-LICENSE.txt
+          python scripts/web/package_release.py work/web
+          python tests/validate_web_export.py work/web
       - name: Browser boot and touch smoke
         run: |
           python -m pip install playwright==1.62.0
           python -m playwright install --with-deps chromium
           python tests/web_smoke.py
+          python tests/web_cache_test.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:

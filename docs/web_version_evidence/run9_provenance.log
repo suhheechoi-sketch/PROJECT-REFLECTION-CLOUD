@@ -1,0 +1,19 @@
+2026-10-25T09:19:04.3316462Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +304b7b49bb63ab9be92ce2399ed8f9291e159c63:refs/remotes/origin/main
+2026-10-25T09:19:05.2586001Z  * [new ref]         304b7b49bb63ab9be92ce2399ed8f9291e159c63 -> origin/main
+2026-10-25T09:19:05.3938337Z 304b7b49bb63ab9be92ce2399ed8f9291e159c63
+2026-10-25T09:20:13.8030060Z [  20% ] savepack | Storing File: res://assets/ta_demo_details.gdc
+2026-10-25T09:20:13.8032328Z [  23% ] savepack | Storing File: res://data/ta_demo/layout.json
+2026-10-25T09:20:13.8034603Z [  26% ] savepack | Storing File: res://data/ta_demo/proposed_layout.json
+2026-10-25T09:20:13.9839705Z [  36% ] savepack | Storing File: res://.godot/exported/133200997/export-4316e647ae6f29ccf4fd780701c91e7a-optical_console.scn
+2026-10-25T09:20:14.1066298Z [  38% ] savepack | Storing File: res://.godot/exported/133200997/export-ae461fa2d23ab8c4ebcb34b460865d02-ta_demo.scn
+2026-10-25T09:20:14.1276096Z [  82% ] savepack | Storing File: res://scripts/ta_console_station.gdc
+2026-10-25T09:20:14.1282627Z [  85% ] savepack | Storing File: res://scripts/ta_console_view.gdc
+2026-10-25T09:20:14.1319416Z [  87% ] savepack | Storing File: res://scripts/ta_demo.gdc
+2026-10-25T09:20:14.1330786Z [  90% ] savepack | Storing File: res://scripts/ta_geometry.gdc
+2026-10-25T09:20:14.1359605Z [  96% ] savepack | Storing File: res://assets/ta_demo_details.gd.remap
+2026-10-25T09:20:14.1361784Z [  96% ] savepack | Storing File: res://scenes/optical_console.tscn.remap
+2026-10-25T09:20:14.1362799Z [  96% ] savepack | Storing File: res://scenes/ta_demo.tscn.remap
+2026-10-25T09:20:14.1381294Z [  96% ] savepack | Storing File: res://scripts/ta_console_station.gd.remap
+2026-10-25T09:20:14.1382438Z [  96% ] savepack | Storing File: res://scripts/ta_console_view.gd.remap
+2026-10-25T09:20:14.1383484Z [  96% ] savepack | Storing File: res://scripts/ta_demo.gd.remap
+2026-10-25T09:20:14.1384533Z [  96% ] savepack | Storing File: res://scripts/ta_geometry.gd.remap

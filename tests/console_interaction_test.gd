@@ -84,6 +84,7 @@ func run() -> void:
 	game.player.set_emitter_acquired(true)
 	game.player.position = Vector3(35.66,0.03,43.38)
 	var pose: Transform3D = game.camera.global_transform
+	await capture("a01_station")
 	key(KEY_E)
 	await settle()
 	check(game.control_mode and game.console_stage == "A-01","A01 E immediately enters existing V-style view")
@@ -93,6 +94,7 @@ func run() -> void:
 	var m1: OpticalDevice = game.devices["A01-M1"]
 	var m2: OpticalDevice = game.devices["A01-M2"]
 	click(pixel(m1))
+	await capture("a01_selected")
 	check(game.selected_device == m1 and m1.selection_outline.visible,"PC click selects and outlines mirror")
 	click(game.hud_panel.get_global_rect().get_center())
 	check(game.selected_device == m1,"HUD click does not deselect")
@@ -101,6 +103,7 @@ func run() -> void:
 	click(pixel(m2))
 	check(game.selected_device == m2,"another mirror can be selected")
 	click(Pointer.screen_position(game.camera,Vector3(41,0,39)))
+	await capture("a01_deselected")
 	check(game.selected_device == null and not m2.is_selected and game.control_mode,"floor click clears selection and highlight but keeps mode")
 	var previous := m2.rotation.y
 	var wheel := InputEventMouseButton.new()
