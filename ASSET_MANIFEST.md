@@ -43,3 +43,7 @@
 ## 웹 데모 한국어 폰트
 
 `assets/fonts/NotoSansKR.ttf`: Google Fonts의 Noto Sans KR (SIL Open Font License 1.1, 동봉 `assets/fonts/OFL.txt`). 출처: https://github.com/google/fonts/tree/main/ofl/notosanskr . Safari 웹 내보내기에서 OS 폰트에 의존하지 않고 한국어 안내와 터치 버튼을 표시하기 위해 포함. 기존 잠금 자산은 변경하지 않음.
+
+## 광학 콘솔 파생 시각 자산 (2026-10-25)
+
+`scenes/optical_console.tscn` / `scripts/ta_console_station.gd`: 금속 콘솔·CRT·상태등·광학 제어 표식. 기존 A01/A02 위치를 보존하고 A03 (9,75)에 새 가구를 추가했다. `OpticalDevice.selection_outline`의 외곽 강조는 시각 효과만 추가하며 광학 충돌 형상은 유지한다. 잠긴 assets/v4_0 파일은 수정하지 않았다. 실제 렌더 증거와 검증 범위: `docs/OPTICAL_CONSOLE_REVISION.md`, `docs/console_evidence/`.

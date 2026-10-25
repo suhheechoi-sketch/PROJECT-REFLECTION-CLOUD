@@ -42,6 +42,7 @@ var visual: MeshInstance3D
 var marker: MeshInstance3D
 var state_ring: MeshInstance3D
 var type_mark: Label3D
+var selection_outline: MeshInstance3D
 var is_selected: bool = false
 var is_targeted: bool = false
 
@@ -120,6 +121,7 @@ func set_targeted(targeted: bool) -> void:
 
 
 func _refresh_visual() -> void:
+	if selection_outline != null: selection_outline.visible = is_selected
 	var material: Material = _base_material
 	if kind == "white_source" and source_active:
 		material = _white_source_active_material
