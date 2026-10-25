@@ -1,0 +1,74 @@
+INPUT MODE: COMPUTER
+INPUT MODE: MOBILE
+PASS OBSERVER: real ScreenTouch selects MOBILE while mouse emulation stays disabled
+PASS OBSERVER: settings button can be opened using only touch
+INPUT MODE: COMPUTER
+PASS OBSERVER: settings dialog and button explicitly use Korean-capable font in web builds
+PASS OBSERVER: real low-resolution SubViewport shares the gameplay world
+PASS OBSERVER: hidden observer does not render
+PASS OBSERVER: Korean/English variable font uses medium weight instead of Thin
+PASS OBSERVER: observer snapshot uses the exact rendered physical segments
+PASS OBSERVER: last endpoint is the receiver after reflection, not the first mirror or original direction
+PASS OBSERVER: actual accepted hit reports charging before required duration
+PASS OBSERVER: snapshot consumers cannot mutate the tracer's data
+PASS OBSERVER: real reflected endpoint is outside player camera
+PASS OBSERVER: observer never moves the player camera
+PASS OBSERVER: offscreen endpoint shows exactly one actual camera view
+PASS OBSERVER: unhit neighboring receiver is excluded from the observer render
+PASS OBSERVER: only terminal receiver and preceding actual mirror are rendered as device silhouettes
+PASS OBSERVER: observer does not falsely announce receiver active
+PASS OBSERVER: observer does not cover objective HUD
+PASS OBSERVER: observer does not cover minimap
+PASS OBSERVER: new touch on observer does not redirect the existing beam or start a world gesture
+PASS OBSERVER: click on observer suppresses a new handheld shot until release
+PASS OBSERVER: observer captures clicks instead of selecting or firing at the world
+PASS OBSERVER: actual receiver latch and tutorial completion are preserved
+PASS OBSERVER: mechanical feedback contains generated non-silent PCM audio (playback listening unverified)
+PASS OBSERVER: feedback follows real activation without delaying physical gate unlock
+PASS OBSERVER: observer rendering requested at approximately 12 Hz, not every physics frame
+PASS OBSERVER: onscreen terminal endpoint hides observer
+PASS OBSERVER: offscreen again restores observer
+PASS OBSERVER: an empty physical path hides an active observer instead of displaying stale contact
+INPUT MODE: MOBILE
+PASS OBSERVER: observer does not overlap mobile controls at (1920, 1080)
+INPUT MODE: MOBILE
+PASS OBSERVER: observer does not overlap mobile controls at (1440, 1080)
+INPUT MODE: COMPUTER
+PASS OBSERVER: firing stop retains last frame for 0.8 seconds
+PASS OBSERVER: retained frame fades and rendering stops
+PASS OBSERVER: firing flag without a real path cannot invent an observation
+PASS OBSERVER: splitter leaf IDs stay distinct and conserve the existing 50/50 energy
+PASS OBSERVER: receiver acceptance is per branch, not copied from another valid source hitting the same device
+PASS OBSERVER: actual receiver branch wins deterministic selection
+PASS OBSERVER: stable branch selection 0
+PASS OBSERVER: stable branch selection 1
+PASS OBSERVER: stable branch selection 2
+PASS OBSERVER: stable branch selection 3
+PASS OBSERVER: stable branch selection 4
+PASS OBSERVER: physical prism preserves RGB branch identities and energy conservation
+PASS OBSERVER: player source takes precedence over concurrent dock source
+PASS OBSERVER: engaged A02 dock source is observable when no handheld beam is firing
+PASS OBSERVER: dock beam is not observed from an unrelated room
+PASS OBSERVER: a real receiver contact with insufficient energy never reports active or charging
+PASS OBSERVER: no collision at distance cap is explicitly marked range limit
+PASS OBSERVER: range cap never claims a real collision
+PASS OBSERVER: 2D data fallback renders no secondary world camera
+PASS OBSERVER: console camera immediately hides observer
+PASS OBSERVER: A02 console preserves main-only device visibility and excludes observation proxies
+PASS OBSERVER: pause immediately hides observer
+PASS OBSERVER: demo ending hides observer
+INPUT MODE: MOBILE
+PASS OBSERVER: MOBILE exposes existing touch controls
+INPUT MODE: COMPUTER
+PASS OBSERVER: COMPUTER hides touch UI and cancels held input
+PASS OBSERVER: V cannot enable an ordinary exploration overview
+PASS OBSERVER: Computer WASD still moves the character
+PASS OBSERVER: Computer held left click fires acquired L07
+PASS OBSERVER: settings suspends gameplay while choosing input
+INPUT MODE: COMPUTER
+PASS OBSERVER: accessible keyboard mode selection exits modal
+INPUT MODE: MOBILE
+PASS OBSERVER: platform preference saved separately from progress
+PASS OBSERVER: saved mode reload skips the first-run choice and restores touch UI
+OBSERVER: 62 checks / 0 failures
+PASS: isolated web visual review: beam_observer_test

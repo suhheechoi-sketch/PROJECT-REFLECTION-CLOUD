@@ -258,16 +258,17 @@ func begin_laser_frame() -> void:
 	_hit_this_frame = false
 
 
-func receive_laser(channel: String, energy: float, incoming_direction: Vector3, reflections: int = 0) -> void:
+func receive_laser(channel: String, energy: float, incoming_direction: Vector3, reflections: int = 0) -> bool:
 	if kind != "receiver" or not receiver_enabled or energy < minimum_energy:
-		return
+		return false
 	if reflections < minimum_reflections:
-		return
+		return false
 	if receiver_color != "white" and receiver_color != channel:
-		return
+		return false
 	if required_direction.length_squared() > 0.0001 and incoming_direction.normalized().dot(required_direction.normalized()) < minimum_direction_dot:
-		return
+		return false
 	_hit_this_frame = true
+	return true
 
 
 func update_receiver(delta: float) -> void:

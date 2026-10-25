@@ -10,6 +10,36 @@ var segment_nodes: Array[MeshInstance3D] = []
 var channel_materials: Dictionary = {}
 var last_segment_count: int = 0
 var ignore_rids: Array[RID] = []
+# Observations are copies of the same physical trace used for rendering/receiver tests.
+var _observed_segments: Array[Dictionary] = []
+func observation_snapshot() -> Array[Dictionary]:
+	return _observed_segments.duplicate(true)
+
+func _record_segment(segments: Array[Dictionary], branch: Dictionary, origin: Vector3, end: Vector3, channel: String, energy: float, reflections: int, collider: Object = null) -> void:
+	segments.append({"from":origin,"to":end,"channel":channel,"energy":energy,
+		"source_id":branch.get("source_id","player"),"branch_id":branch.get("branch_id","0"),
+		"segment_index":segments.size(),"reflection_count":reflections,"did_hit":collider != null,
+		"collision_type":collider.kind if collider is OpticalDevice else ("wall" if collider != null else "range_limit"),
+		"collider_id":collider.get_instance_id() if collider != null else 0,"terminal":false,
+		"path_length":MAX_DISTANCE,"receiver_accepted":false,"receiver_active":false})
+
+func _publish_observations(segments: Array[Dictionary]) -> void:
+	var last := {}
+	var parents := {}
+	for segment in segments:
+		var key: String = segment.source_id+":"+segment.branch_id
+		last[key] = segment.segment_index
+		var branch: String = segment.branch_id
+		if branch.contains("/"): parents[segment.source_id+":"+branch.get_base_dir()] = true
+		if segment.collision_type == "receiver":
+			var receiver = instance_from_id(segment.collider_id)
+			if is_instance_valid(receiver):
+				segment.receiver_active = receiver.receiver_active
+	for segment in segments:
+		var key: String = segment.source_id+":"+segment.branch_id
+		segment.terminal = not parents.has(key) and last[key] == segment.segment_index
+	_observed_segments = segments
+
 
 
 func _ready() -> void:
@@ -33,15 +63,17 @@ func update_beam(start: Vector3, target: Vector3, firing: bool, delta: float, ch
 		var direction := target - start
 		direction.y = 0.0
 		if direction.length_squared() > 0.0001:
-			_trace(start, direction.normalized(), channel, 1.0, segments)
-	for source in additional_sources:
+			_trace(start, direction.normalized(), channel, 1.0, segments, "player")
+	for source_index in range(additional_sources.size()):
+		var source: Dictionary = additional_sources[source_index]
 		if not bool(source.get("active", false)):
 			continue
-		_trace(source["origin"], source["direction"], String(source.get("channel", "white")), float(source.get("energy", 1.0)), segments)
+		_trace(source["origin"], source["direction"], String(source.get("channel", "white")), float(source.get("energy", 1.0)), segments, str(source.get("source_id", "source-%d" % source_index)))
 	for device in devices:
 		if device is OpticalDevice:
 			device.update_receiver(delta)
 	_update_simultaneous_receivers(devices, delta)
+	_publish_observations(segments)
 	_render_segments(segments)
 
 
@@ -75,8 +107,9 @@ func _update_simultaneous_receivers(devices: Array, delta: float) -> void:
 				(item as OpticalDevice).activate_receiver()
 
 
-func _trace(start: Vector3, direction: Vector3, channel: String, energy: float, segments: Array[Dictionary]) -> void:
+func _trace(start: Vector3, direction: Vector3, channel: String, energy: float, segments: Array[Dictionary], source_id := "player") -> void:
 	var pending: Array[Dictionary] = [{
+		"source_id":source_id,"branch_id":"0",
 		"origin": start,
 		"direction": direction.normalized(),
 		"channel": channel,
@@ -126,23 +159,24 @@ func _trace(start: Vector3, direction: Vector3, channel: String, energy: float, 
 				query.collide_with_areas = false
 				hit = get_world_3d().direct_space_state.intersect_ray(query)
 				if hit.is_empty():
-					segments.append({"from": origin, "to": origin + ray_direction * remaining, "channel": ray_channel, "energy": ray_energy})
+					_record_segment(segments, branch, origin, origin + ray_direction * remaining, ray_channel, ray_energy, reflections)
 					break
 				collider = hit["collider"]
 			var hit_position: Vector3 = hit["position"]
 			var normal: Vector3 = hit["normal"].normalized()
 			var traveled := origin.distance_to(hit_position)
 			if traveled > remaining:
-				segments.append({"from": origin, "to": origin + ray_direction * remaining, "channel": ray_channel, "energy": ray_energy})
+				_record_segment(segments, branch, origin, origin + ray_direction * remaining, ray_channel, ray_energy, reflections)
 				break
 			remaining -= traveled
-			segments.append({"from": origin, "to": hit_position, "channel": ray_channel, "energy": ray_energy})
+			_record_segment(segments, branch, origin, hit_position, ray_channel, ray_energy, reflections, collider)
+			segments.back().path_length = MAX_DISTANCE-remaining
 			interactions += 1
 			if not (collider is OpticalDevice):
 				break
 			var device := collider as OpticalDevice
 			if device.kind == "receiver":
-				device.receive_laser(ray_channel, ray_energy, ray_direction, reflections)
+				segments.back().receiver_accepted = device.receive_laser(ray_channel, ray_energy, ray_direction, reflections)
 				break
 			if device.kind == "white_source":
 				if not device.source_active:
@@ -167,10 +201,10 @@ func _trace(start: Vector3, direction: Vector3, channel: String, energy: float, 
 				var transmitted_energy: float = ray_energy * 0.5
 				var reflected_energy: float = ray_energy * 0.5
 				if transmitted_energy >= 0.04:
-					pending.append({"origin": hit_position + ray_direction * EPSILON, "direction": ray_direction, "channel": ray_channel, "energy": transmitted_energy, "inside_id": 0, "remaining": maxf(0.0, remaining - EPSILON), "interactions": interactions, "reflections": reflections, "skip_once": [device.get_rid()]})
+					pending.append({"source_id":source_id,"branch_id":str(branch.branch_id)+"/T","origin": hit_position + ray_direction * EPSILON, "direction": ray_direction, "channel": ray_channel, "energy": transmitted_energy, "inside_id": 0, "remaining": maxf(0.0, remaining - EPSILON), "interactions": interactions, "reflections": reflections, "skip_once": [device.get_rid()]})
 				if reflected_energy >= 0.04:
 					var reflected := OpticalMath.reflect(ray_direction, normal)
-					pending.append({"origin": hit_position + reflected * EPSILON, "direction": reflected, "channel": ray_channel, "energy": reflected_energy, "inside_id": 0, "remaining": maxf(0.0, remaining - EPSILON), "interactions": interactions, "reflections": reflections + 1, "skip_once": [device.get_rid()]})
+					pending.append({"source_id":source_id,"branch_id":str(branch.branch_id)+"/R","origin": hit_position + reflected * EPSILON, "direction": reflected, "channel": ray_channel, "energy": reflected_energy, "inside_id": 0, "remaining": maxf(0.0, remaining - EPSILON), "interactions": interactions, "reflections": reflections + 1, "skip_once": [device.get_rid()]})
 				break
 			if device.kind in ["medium", "wedge_medium", "prism"]:
 				var device_id := device.get_instance_id()
@@ -191,7 +225,7 @@ func _trace(start: Vector3, direction: Vector3, channel: String, energy: float, 
 					for spectral_channel in ["red", "green", "blue"]:
 						var spectral_direction := OpticalMath.refract(ray_direction, normal, 1.0, device.get_refractive_index(spectral_channel))
 						if spectral_direction.length_squared() > 0.0:
-							pending.append({"origin": hit_position + spectral_direction * EPSILON, "direction": spectral_direction, "channel": spectral_channel, "energy": ray_energy / 3.0, "inside_id": device_id, "remaining": maxf(0.0, remaining - EPSILON), "interactions": interactions, "reflections": reflections})
+							pending.append({"source_id":source_id,"branch_id":str(branch.branch_id)+"/"+spectral_channel,"origin": hit_position + spectral_direction * EPSILON, "direction": spectral_direction, "channel": spectral_channel, "energy": ray_energy / 3.0, "inside_id": device_id, "remaining": maxf(0.0, remaining - EPSILON), "interactions": interactions, "reflections": reflections})
 					break
 				var refracted := OpticalMath.refract(ray_direction, normal, 1.0, device.get_refractive_index(ray_channel))
 				if refracted.length_squared() < 0.0001:
@@ -210,6 +244,7 @@ func _render_segments(segments: Array[Dictionary]) -> void:
 		cylinder.bottom_radius = 0.025
 		cylinder.radial_segments = 5
 		visual.mesh = cylinder
+		if has_meta("observer_layers"): visual.layers = 1 << 18
 		visual.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		add_child(visual)
 		segment_nodes.append(visual)

@@ -47,3 +47,10 @@
 ## 광학 콘솔 파생 시각 자산 (2026-10-25)
 
 `scenes/optical_console.tscn` / `scripts/ta_console_station.gd`: 금속 콘솔·CRT·상태등·광학 제어 표식. 기존 A01/A02 위치를 보존하고 A03 (9,75)에 새 가구를 추가했다. `OpticalDevice.selection_outline`의 외곽 강조는 시각 효과만 추가하며 광학 충돌 형상은 유지한다. 잠긴 assets/v4_0 파일은 수정하지 않았다. 실제 렌더 증거와 검증 범위: `docs/OPTICAL_CONSOLE_REVISION.md`, `docs/console_evidence/`.
+
+## 관측/산업 외장 파생 세대 (2026-10-25)
+
+- ID RF-TA-PRESENTATION / v1.0: `assets/presentation_v1/industrial_details.gd`, `scripts/ta_console_station.gd`, `scripts/puzzle_feedback.gd`. 신규 절차형 금속/렌즈/회전 눈금/레일 클램프/배관·안전 표식/전력 펄스/기계음. 기존 메시를 덮어쓰지 않고 시각 자식 인스턴스를 추가한다.
+- 교체 이유: 첨부 디자인 PDF의 장치 역할 구분, 산업 시설 재질 대비와 성공 피드백. 잠금 원본/해시, 광학 콜라이더·장치 치수·배치·광원 원점은 유지한다. 새 장식과 관측 인스턴스에는 물리/광학 콜라이더가 없다.
+- 폰트: 기존 OFL Noto Sans KR 파일을 보존하고 지원되는 wght 축 550을 지정했다. 새로운 외부 폰트/이미지/음원을 추가하지 않았다. 기계음은 seed 7007의 생성 PCM이다.
+- 검수 화면·문서: `docs/BEAM_OBSERVER_PRESENTATION.md`, `docs/beam_observer_evidence/`. 실제 native/Chromium 렌더와 iPad 실기기 미검증을 구분한다. 첨부 PDF 이미지는 콘셉트 참고이며 게임 캡처로 재사용하지 않는다.
