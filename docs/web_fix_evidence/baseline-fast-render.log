@@ -1,0 +1,14 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+FAIL: The real reflected beam activates the T-03 receiver.
+FAIL: The reflected receiver advances to T-04.
+FAIL: T-03 opens the physical tutorial gate.
+FAIL: The opened tutorial gate stops blocking the player.
+FAIL: T-04 enables the final assessment receiver.
+FAIL: The twice-reflected beam activates the T-04 receiver.
+FAIL: Activating the final assessment receiver completes the tutorial.
+FAIL: T-04 opens the hub.
+FAIL: Tutorial completion enables the mirror wing.
+FAIL: The completed assessment opens the A-wing gate.
+FAIL: The completed assessment opens the hub gate.
+Tutorial flow checks failed: 11

@@ -52,6 +52,12 @@ func run() -> void:
 	press(3,"HELP")
 	check(not game.help_panel.visible,"touch help closes overlay")
 	press(3,"HELP",false)
+	game.ending_elapsed = 3
+	game.restored = true
+	press(4,"NEW")
+	check(game.completed.is_empty() and game.ending_elapsed < 0 and not game.restored,"touch new game exits the persisted demo ending")
+	check(not game.player.has_emitter,"touch new game resets sole emitter ownership")
+	press(4,"NEW",false)
 	game.queue_free()
 	await process_frame
 	if not failed: print("PASS: touch input lifecycle")

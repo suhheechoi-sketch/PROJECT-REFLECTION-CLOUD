@@ -24,14 +24,14 @@ func _layout() -> void:
 		"-": Rect2(s.x-420, s.y-440, 90, 80), "+": Rect2(s.x-320, s.y-440, 90, 80),
 		"FINE": Rect2(s.x-220, s.y-440, 100, 80), "F": Rect2(s.x-110, s.y-440, 90, 80),
 		"ESC": Rect2(s.x-120, 360, 100, 70), "MAP": Rect2(s.x-230, 360, 100, 70),
-		"HELP": Rect2(s.x-340, 360, 100, 70), "R": Rect2(s.x-450, 360, 100, 70), "LOG": Rect2(s.x-560, 360, 100, 70)
+		"HELP": Rect2(s.x-340, 360, 100, 70), "R": Rect2(s.x-450, 360, 100, 70), "LOG": Rect2(s.x-560, 360, 100, 70), "NEW": Rect2(s.x-670, 360, 100, 70)
 	}
 
 func _draw() -> void:
 	for label in buttons:
 		var rect: Rect2 = buttons[label]
 		draw_style_box(_style(label == "FINE" and fine or label in contacts.values()), rect)
-		draw_string(ThemeDB.fallback_font, rect.position + Vector2(12, 45), {"W":"↑", "A":"←", "S":"↓", "D":"→", "FIRE":"발사", "E":"조작", "FINE":"1°", "F":"출력", "ESC":"종료", "MAP":"지도", "HELP":"도움", "R":"재시도", "LOG":"기록"}.get(label,label), HORIZONTAL_ALIGNMENT_LEFT, -1, 26, Color.WHITE)
+		draw_string(ThemeDB.fallback_font, rect.position + Vector2(12, 45), {"W":"↑", "A":"←", "S":"↓", "D":"→", "FIRE":"발사", "E":"조작", "FINE":"1°", "F":"출력", "ESC":"종료", "MAP":"지도", "HELP":"도움", "R":"재시도", "LOG":"기록", "NEW":"새 게임"}.get(label,label), HORIZONTAL_ALIGNMENT_LEFT, -1, 26, Color.WHITE)
 
 func _style(on: bool) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
@@ -85,7 +85,8 @@ func _activate(label: String) -> void:
 		game._input(event)
 	else:
 		var event := InputEventKey.new()
-		event.keycode = {"E": KEY_E, "F": KEY_F, "ESC": KEY_ESCAPE, "MAP": KEY_TAB, "HELP": KEY_H, "R": KEY_R, "LOG": KEY_L}[label]
+		event.shift_pressed = label == "NEW"
+		event.keycode = {"E": KEY_E, "F": KEY_F, "ESC": KEY_ESCAPE, "MAP": KEY_TAB, "HELP": KEY_H, "R": KEY_R, "LOG": KEY_L, "NEW": KEY_R}[label]
 		event.pressed = true
 		game._input(event)
 

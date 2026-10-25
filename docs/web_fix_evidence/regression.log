@@ -1,0 +1,24 @@
+4.7.2.stable.official.ed1daf0bf
+PASS: import
+PASS: startup
+PASS: a01_lab_test
+PASS: a02_docking_test
+PASS: asset_lock_test
+PASS: camera_motion_test
+PASS: camera_ui_test
+PASS: energy_flow_test
+PASS: exploration_test
+PASS: navigation_test
+PASS: optical_control_test
+PASS: optical_rules_v51_test
+PASS: optics_math_test
+PASS: progression_state_test
+PASS: quality_pass_test
+PASS: representative_puzzle_test
+PASS: room_visibility_test
+PASS: stage_catalog_test
+PASS: ta_controls_checkpoint_test
+PASS: ta_demo_test
+PASS: ta_navigation_test
+PASS: touch_controls_test
+PASS: tutorial_flow_test
