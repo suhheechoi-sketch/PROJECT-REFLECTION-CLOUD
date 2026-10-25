@@ -74,6 +74,9 @@ func interact() -> bool:
 func enter_control_mode() -> void:
 	if not authorized():
 		return
+	if game.selected_device != null:
+		game.selected_device.set_selected(false)
+		game.selected_device = null
 	restore_overview = game.puzzle_camera.overview
 	restore_manual_explore = game.puzzle_camera.manual_explore
 	control_mode = true
@@ -152,6 +155,7 @@ func escape() -> bool:
 	return false
 
 func reset_permissions() -> void:
+	exit_control_mode()
 	control_mode = false
 	clear_selection()
 	permissions.clear()

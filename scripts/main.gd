@@ -75,6 +75,7 @@ var pause_panel: PanelContainer
 var reticle: Label
 var is_paused_overlay := false
 var mirror_relay: OpticalDevice
+var a02_lab: Node3D
 var a01_lab: Node3D
 var split_relay_a: OpticalDevice
 var split_relay_b: OpticalDevice
@@ -122,6 +123,7 @@ func _ready() -> void:
 	add_child(optical_control)
 	optical_control.setup(self)
 	player.optical_control = optical_control
+	player.station_control = a02_lab
 	_load_exploration()
 	progression.state_changed.connect(_on_progression_changed)
 	tutorial_start_position = player.global_position
@@ -138,7 +140,7 @@ func _notification(what: int) -> void:
 func _physics_process(delta: float) -> void:
 	if player == null or is_paused_overlay:
 		return
-	var fixed_sources: Array[Dictionary] = []
+	var fixed_sources: Array[Dictionary] = a02_lab.sources()
 	if white_spectrum_source != null and white_spectrum_source.source_active and _player_in_area("area_b"):
 		fixed_sources.append({"origin": white_spectrum_source.global_position + Vector3(0.45, 1.15, 0), "direction": Vector3.RIGHT, "channel": "white", "energy": 1.0, "active": true})
 	laser.update_beam(player.get_emitter_origin(), player.aim_position, player.firing and not is_paused_overlay, delta, player.emitter_channel, fixed_sources)
@@ -166,6 +168,8 @@ func _physics_process(delta: float) -> void:
 
 
 func _input(event: InputEvent) -> void:
+	if not is_paused_overlay and a02_lab != null and a02_lab.handle_input(event):
+		return
 	if is_paused_overlay and not (event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE):
 		return
 	if event is InputEventKey and event.pressed and not event.echo:
@@ -706,6 +710,9 @@ func _build_devices() -> void:
 	add_child(a01_lab)
 	a01_lab.build(self)
 	mirror_relay = a01_lab.receiver
+	a02_lab = preload("res://scripts/a02_lab.gd").new()
+	add_child(a02_lab)
+	a02_lab.build(self)
 
 	# B: a slab and dispersive prism feed three color-coded receivers.
 	var medium := _create_device("medium", "G-01 광증폭 매질", Vector3(12, 0, 0), Vector3(1.8, 2.0, 1.5), deg_to_rad(26), Color(0.22, 0.49, 0.52))
@@ -1610,6 +1617,8 @@ func _nearest_device() -> OpticalDevice:
 func _interact() -> void:
 	if optical_control != null and optical_control.interact():
 		return
+	if a02_lab != null and a02_lab.interact():
+		return
 	var tutorial_id := progression.get_current_tutorial_id()
 	if tutorial_id == "T-01":
 		if not tutorial_move_completed:
@@ -1671,6 +1680,12 @@ func _rotate_selected(steps: int, fine: bool = false) -> void:
 	_show_status("%s · %d°" % [selected_device.display_name, int(rad_to_deg(wrapf(selected_device.rotation.y, 0.0, TAU)))])
 
 func _reset_current_puzzle() -> void:
+	if a02_lab != null and a02_lab.in_room():
+		a02_lab.reset_lab()
+		player.position = preload("res://scripts/a02_lab.gd").CONSOLE + Vector3(0, 0.1, 0)
+		player.velocity = Vector3.ZERO
+		player.reset_physics_interpolation()
+		return
 	if not progression.tutorial_completed:
 		_reset_all_progress()
 		return
@@ -1679,6 +1694,8 @@ func _reset_current_puzzle() -> void:
 		area_id = "area_a"
 	for item in get_tree().get_nodes_in_group("optical_devices"):
 		if not item is OpticalDevice:
+			continue
+		if item in a02_lab.mirrors or item in [a02_lab.rail, a02_lab.control, a02_lab.receiver]:
 			continue
 		if _area_id_at(item.global_position) == area_id and (item.kind != "receiver" or not item.receiver_active):
 			item.reset_device()
@@ -1693,6 +1710,8 @@ func _reset_current_puzzle() -> void:
 	_show_status("%s 구역 장치를 초기 배치로 복원했습니다. 완료 회로는 유지됩니다." % area_id)
 
 func _reset_all_progress() -> void:
+	if a02_lab != null:
+		a02_lab.reset_lab(true)
 	if optical_control != null:
 		optical_control.reset_permissions()
 	for item in get_tree().get_nodes_in_group("optical_devices"):
@@ -1770,6 +1789,8 @@ func _on_receiver_activated(device: OpticalDevice) -> void:
 		progression.advance_tutorial("T-04")
 		_show_status("DIRECTOR: 두 번의 반사 확인. 기초 적합성 검사가 완료되었습니다.")
 	elif device == mirror_relay:
+		if not progression.completed_stage_ids.has("A-01"):
+			progression.completed_stage_ids.append("A-01")
 		if progression.restore_circuit("A"):
 			_show_status("주 회로 A 복구. 분광 실험동과 동력 정비동이 개방되었습니다.")
 	elif spectrum_receivers.has(device):
