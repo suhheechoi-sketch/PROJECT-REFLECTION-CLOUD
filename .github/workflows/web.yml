@@ -49,6 +49,11 @@ jobs:
           python -m playwright install --with-deps chromium
           python tests/web_smoke.py
       - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: validation-logs
+          path: work/validation
+      - uses: actions/upload-artifact@v4
         with:
           name: reflection-web
           path: work/web
