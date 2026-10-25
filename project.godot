@@ -25,3 +25,6 @@ environment/defaults/default_clear_color=Color(0.012, 0.016, 0.019, 1)
 3d/default_gravity=24.0
 common/physics_interpolation=true
 
+
+[input_devices]
+pointing/emulate_mouse_from_touch=false

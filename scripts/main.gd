@@ -150,7 +150,7 @@ func _physics_process(delta: float) -> void:
 	if progression.tutorial_completed and not hub_discovered and player.position.x > -7.0 and absf(player.position.z) < 6.5:
 		hub_discovered = true
 		_show_status("시스템: 중앙 배광실. 회로 A 오프라인. 전력 복구 후 B·C를 원하는 순서로 탐색하십시오.")
-	reticle.position = get_viewport().get_mouse_position() - Vector2(8.0, 14.0)
+	reticle.position = player.pointer_position - Vector2(8.0, 14.0)
 	_process_tutorial()
 	_update_objectives()
 	_update_nearby_prompt()
@@ -1027,7 +1027,7 @@ func _build_ui() -> void:
 	prompt_panel.add_child(prompt_label)
 
 	reticle = _make_label("+", 26, Color(1.0, 0.88, 0.55, 0.95))
-	reticle.position = get_viewport().get_mouse_position() - Vector2(8.0, 14.0)
+	reticle.position = player.pointer_position - Vector2(8.0, 14.0)
 	reticle.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(reticle)
 
