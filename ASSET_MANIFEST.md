@@ -39,3 +39,7 @@
 - 교체 이유: 업로드한 T/A 도면과 청결한 T / 노후 A 분위기에 맞춘 별도 시작 씬. 기존 `assets/v4_0/`·`data/asset_lock.json`은 수정하지 않음.
 - 호환성: 기존 v5.1 장치 외장과 광학 콜라이더를 공유. 장식 패널·배관은 충돌을 추가하지 않고 침상은 몸/광선에 충돌. 일반 벽 0.45m, 서비스 칸막이 0.20m. 최종 치수·보정은 `docs/TA_DEMO_VALIDATED_GEOMETRY.md`.
 - 실제 검수 화면: `docs/ta_demo_evidence/ta_start.png`, `ta_a01_solved.png`, `ta_a02_rail.png`, `ta_a03_ready.png`. Godot 4.7.2 / X11 / llvmpipe의 자동 렌더 검사이며 수동 플레이 인증이 아님.
+
+## 웹 데모 한국어 폰트
+
+`assets/fonts/NotoSansKR.ttf`: Google Fonts의 Noto Sans KR (SIL Open Font License 1.1, 동봉 `assets/fonts/OFL.txt`). 출처: https://github.com/google/fonts/tree/main/ofl/notosanskr . Safari 웹 내보내기에서 OS 폰트에 의존하지 않고 한국어 안내와 터치 버튼을 표시하기 위해 포함. 기존 잠금 자산은 변경하지 않음.

@@ -11,6 +11,8 @@ signal aim_changed(world_position: Vector3)
 var camera: Camera3D
 var pointer_position := Vector2.ZERO
 var aim_position: Vector3 = Vector3.ZERO
+var touch_movement := Vector2.ZERO
+var touch_firing := false
 var firing: bool = false
 var has_emitter: bool = false
 var emitter_channel: String = "red"
@@ -89,7 +91,7 @@ func _physics_process(delta: float) -> void:
 		firing = false
 		_update_aim()
 		return
-	var input_vector := Vector2.ZERO
+	var input_vector := touch_movement
 	if Input.is_key_pressed(KEY_A):
 		input_vector.x -= 1.0
 	if Input.is_key_pressed(KEY_D):
@@ -106,11 +108,11 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	_update_aim()
 	if optical_control != null and optical_control.suppress_fire_until_release:
-		if not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		if not (touch_firing or Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)):
 			optical_control.suppress_fire_until_release = false
 		firing = false
 	else:
-		firing = has_emitter and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)
+		firing = has_emitter and (touch_firing or Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT))
 	if emitter != null and aim_position.distance_squared_to(global_position) > 0.1:
 		emitter.look_at(Vector3(aim_position.x, emitter.global_position.y, aim_position.z), Vector3.UP)
 

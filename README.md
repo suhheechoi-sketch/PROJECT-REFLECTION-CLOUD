@@ -51,3 +51,7 @@ Windows: `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\VERIFY_REFLE
 `scenes/main.tscn`, `scripts/a01_lab.gd`, 기존 B~F/H 코드 및 잠긴 `assets/v4_0/`는 보존했습니다. 기존 전체 시설은 `godot --path . res://scenes/main.tscn`으로 별도 실행할 수 있습니다. 해당 씬의 이전 진행 규칙은 T/A 데모의 READY/E/RESTORED 규칙과 별개입니다. 기존 A-02는 배치 설정을 추가해 새 맵에서도 같은 탈착·소유권·레일 로직을 사용합니다.
 
 기준 문서: [AGENTS](AGENTS.md), [통합 확정 규칙](docs/INTEGRATED_DIRECTIVE_20261025.md), [아트](ART_BIBLE.md), [치수](SCALE_GUIDE.md), [장치](DEVICE_CATALOG.md). 독립된 v6.2 원본은 저장소에서 확인되지 않았으며, 통합 지시서에 인용된 확정 규칙을 적용했습니다. 이전 작업 기록은 [A-02 보고](docs/A02_DOCKING_REPORT.md), [v4 보고](docs/V4_QUALITY_REPORT.md)를 참고하십시오.
+
+## iPad Safari / Web
+
+터치 조작, Godot 4.7.2 웹 빌드, GitHub Actions/Pages 활성화와 검증 범위는 [웹 배포 안내](docs/WEB_IPAD.md)를 참조하세요. PR 빌드 결과는 Actions의 `reflection-web` 산출물이며, 실제 Pages 배포 성공 여부는 별도로 확인해야 합니다.
