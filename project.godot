@@ -3,7 +3,7 @@ config_version=5
 
 [application]
 config/name="PROJECT: REFLECTION"
-run/main_scene="res://scenes/main.tscn"
+run/main_scene="res://scenes/ta_demo.tscn"
 config/features=PackedStringArray("4.2", "GL Compatibility")
 config/description="A low-poly optical puzzle horror prototype."
 

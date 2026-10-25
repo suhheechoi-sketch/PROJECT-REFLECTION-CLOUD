@@ -6,6 +6,12 @@ const DOCK := Vector3(-78, 0, 39)
 const CONSOLE := Vector3(-81, 0, 38)
 const HANDLE := Vector3(-70, 0, 40.2)
 const CHANNELS := [Rect2(2.5, 1.5, 3, 10), Rect2(2.5, 1.5, 11, 3), Rect2(10.5, 1.5, 3, 11), Rect2(7.5, 6.5, 11, 3)]
+var dock_point := DOCK
+var console_point := CONSOLE
+var handle_point := HANDLE
+var rail_start := ORIGIN + Vector3(9, 0, 8)
+var rail_end := ORIGIN + Vector3(12, 0, 8)
+var demo := false
 var game: Node3D
 var mirrors: Array[OpticalDevice] = []
 var rail: OpticalDevice
@@ -27,16 +33,24 @@ func build(world: Node3D) -> void:
 	process_mode = Node.PROCESS_MODE_PAUSABLE
 	process_physics_priority = 30
 	name = "A02_docking_lab"
+	demo = game.has_meta("ta_demo")
+	if demo:
+		dock_point = Vector3(12, 0, 47)
+		console_point = Vector3(9, 0, 46)
+		handle_point = Vector3(25, 0, 47)
+		rail_start = Vector3(19, 0, 41)
+		rail_end = Vector3(23, 0, 41)
 	for i in range(2):
-		mirrors.append(game._create_device("mirror", "M-A02-%d" % (i + 1), ORIGIN + Vector3(4 if i == 0 else 12, 0, 3), Vector3(0.26, 2.3, 2.2), 0, Color("55b7b0")))
-	rail = game._create_device("mirror", "M-A02-rail", ORIGIN + Vector3(9, 0, 8), Vector3(0.26, 2.3, 2.2), PI / 4, Color("d69a43"))
+		mirrors.append(game._create_device("mirror", ("A02-M%d" if demo else "M-A02-%d") % (i + 1), (Vector3(12 if i == 0 else 23, 0, 35) if demo else ORIGIN + Vector3(4 if i == 0 else 12, 0, 3)), Vector3(0.26, 2.3, 2.2), 0, Color("55b7b0")))
+	rail = game._create_device("mirror", ("A02-RAIL" if demo else "M-A02-rail"), rail_start, Vector3(0.26, 2.3, 2.2), PI / 4, Color("d69a43"))
 	rail.rotatable = false
-	control = game._create_device("receiver", "R-A02-control", ORIGIN + Vector3(12, 0, 11.5), Vector3(0.72, 2.1, 0.7), 0, Color("d69a43"))
-	receiver = game._create_device("receiver", "R-A02-final", ORIGIN + Vector3(17, 0, 8), Vector3(0.72, 2.1, 0.7), 0, Color("55b7b0"))
+	control = game._create_device("receiver", ("A02-RCTRL" if demo else "R-A02-control"), (Vector3(23, 0, 46) if demo else ORIGIN + Vector3(12, 0, 11.5)), Vector3(0.72, 2.1, 0.7), 0, Color("d69a43"))
+	receiver = game._create_device("receiver", ("A02-RN" if demo else "R-A02-final"), (Vector3(28, 0, 41) if demo else ORIGIN + Vector3(17, 0, 8)), Vector3(0.72, 2.1, 0.7), 0, Color("55b7b0"))
 	control.required_seconds = 0.7
 	receiver.required_seconds = 1.2
-	_build_channel()
-	for entry in [[CONSOLE, "A-02 광학 콘솔 / E\n클릭 선택 · 휠 회전 · Esc 종료"], [DOCK, "L-07 거치대 / E 탈착\nF 지속 조사 ON/OFF"], [HANDLE, "레일 손잡이 / E 선택\n휠: 현장 이동 (제어 R 필요)"]]:
+	if not demo:
+		_build_channel()
+	for entry in [[console_point, "A-02 광학 콘솔 / E\n클릭 선택 · 휠 회전 · Esc 종료"], [dock_point, "L-07 거치대 / E 탈착\nF 지속 조사 ON/OFF"], [handle_point, "레일 손잡이 / E 선택\n휠: 현장 이동 (제어 R 필요)"]]:
 		game._add_box("A02 STATION", entry[0] + Vector3(0, 0.35, 0), Vector3(0.55, 0.7, 0.55), game.materials["metal"], false)
 		var label := Label3D.new()
 		label.text = entry[1]
@@ -49,12 +63,12 @@ func build(world: Node3D) -> void:
 	var mesh := BoxMesh.new()
 	mesh.size = Vector3(0.16, 0.16, 0.55)
 	dock_mesh.mesh = mesh
-	dock_mesh.position = DOCK + Vector3.UP * 1.15
+	dock_mesh.position = dock_point + Vector3.UP * 1.15
 	dock_mesh.material_override = game.materials["cyan"]
 	dock_mesh.visible = false
 	add_child(dock_mesh)
-	game._add_box("A02 RAIL TRACK", ORIGIN + Vector3(10.5, 0.12, 8), Vector3(3.4, 0.08, 0.2), game.materials["yellow"], false)
-	game._add_area_light(ORIGIN + Vector3(9, 2.5, 7), Color("d69a43"), 0.8, 15)
+	game._add_box("A02 RAIL TRACK", (rail_start + rail_end) * 0.5 + Vector3.UP * 0.12, Vector3(rail_end.x - rail_start.x + 0.4, 0.08, 0.2), game.materials["yellow"], false)
+	game._add_area_light(Vector3(18,2.5,40) if demo else ORIGIN + Vector3(9, 2.5, 7), Color("d69a43"), 0.8, 15)
 
 func _inside(p: Vector2) -> bool:
 	for rect in CHANNELS:
@@ -80,6 +94,8 @@ func _build_channel() -> void:
 					(body.get_child(0) as MeshInstance3D).visible = false
 
 func in_room() -> bool:
+	if demo:
+		return Rect2(6, 28, 24, 22).has_point(Vector2(game.player.position.x, game.player.position.z))
 	return Rect2(-83, 26.3, 25, 14.5).has_point(Vector2(game.player.position.x, game.player.position.z))
 
 func near(point: Vector3) -> bool:
@@ -96,10 +112,10 @@ func interact() -> bool:
 		return true
 	if control_mode:
 		return true
-	if near(CONSOLE):
+	if near(console_point):
 		enter_control()
 		return true
-	if near(DOCK):
+	if near(dock_point):
 		if docked:
 			retrieve()
 		elif game.player.has_emitter:
@@ -110,7 +126,7 @@ func interact() -> bool:
 			game.player.set_emitter_acquired(false)
 			game._show_status("L-07 거치 완료 · 지속 조사 중 · F 중지 · E 회수")
 		return true
-	if near(HANDLE):
+	if near(handle_point):
 		rail_selected = not rail_selected and control.receiver_active
 		game._show_status("레일 선택 · 휠로 이동" if rail_selected else "레일 잠금 / 선택 해제")
 		return true
@@ -126,7 +142,7 @@ func retrieve() -> void:
 func sources() -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
 	if docked and emitting and ready_to_use():
-		result.append({"origin": DOCK + Vector3.UP * 1.15, "direction": Vector3.FORWARD, "channel": channel, "energy": 1.0, "active": true})
+		result.append({"origin": dock_point + Vector3.UP * 1.15, "direction": Vector3.FORWARD, "channel": channel, "energy": 1.0, "active": true})
 	return result
 
 func enter_control() -> void:
@@ -140,8 +156,8 @@ func enter_control() -> void:
 	control_mode = true
 	game.puzzle_camera.set_physics_process(false)
 	game.camera.cull_mask = game.puzzle_camera.original_mask
-	game.camera.global_position = ORIGIN + Vector3(10, 24, 13)
-	game.camera.look_at(ORIGIN + Vector3(10, 0, 6), Vector3.UP)
+	game.camera.global_position = Vector3(18, 30, 47) if demo else ORIGIN + Vector3(10, 24, 13)
+	game.camera.look_at(Vector3(18, 0, 38) if demo else ORIGIN + Vector3(10, 0, 6), Vector3.UP)
 	game.camera.size = 31
 	game.player.firing = false
 	game.player.velocity = Vector3.ZERO
@@ -181,17 +197,17 @@ func handle_input(event: InputEvent) -> bool:
 					selected.rotate_steps(steps)
 		# Reset and map/help still route through the normal input handler.
 		return not (event is InputEventKey and event.keycode in [KEY_R, KEY_H, KEY_F1, KEY_TAB, KEY_L])
-	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F and near(DOCK) and docked:
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F and near(dock_point) and docked:
 		emitting = not emitting
 		return true
-	if rail_selected and event is InputEventMouseButton and event.pressed and event.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN] and not game.optical_control.blocked_by_ui(event.position):
+	if rail_selected and near(handle_point) and event is InputEventMouseButton and event.pressed and event.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN] and not game.optical_control.blocked_by_ui(event.position):
 		move_rail(0.25 if event.button_index == MOUSE_BUTTON_WHEEL_UP else -0.25)
 		return true
 	return false
 
 func move_rail(distance: float) -> void:
-	if control.receiver_active and near(HANDLE):
-		rail.position.x = clampf(rail.position.x + distance, ORIGIN.x + 9, ORIGIN.x + 12)
+	if control.receiver_active and near(handle_point):
+		rail.position.x = clampf(rail.position.x + distance, rail_start.x, rail_end.x)
 		rail.reset_physics_interpolation()
 
 func reset_lab(full: bool = false) -> void:
@@ -202,7 +218,7 @@ func reset_lab(full: bool = false) -> void:
 	if full or not receiver.receiver_active:
 		for device in mirrors + [rail, control, receiver]:
 			device.reset_device()
-		rail.position = ORIGIN + Vector3(9, 0, 8)
+		rail.position = rail_start
 		rail.reset_physics_interpolation()
 
 func _physics_process(_delta: float) -> void:
@@ -212,9 +228,11 @@ func _physics_process(_delta: float) -> void:
 	receiver.receiver_enabled = ready_to_use() and control.receiver_active
 	if receiver.receiver_active and not game.progression.completed_stage_ids.has("A-02"):
 		game.progression.completed_stage_ids.append("A-02")
-		game._show_status("A-02 완료 · A-03은 개발 예정입니다. 발사기를 회수하십시오.")
-	if not near(HANDLE):
+		game._show_status("A-02 완료 · 발사기를 회수한 뒤 A-03으로 이동하십시오.")
+	if not near(handle_point):
 		rail_selected = false
+	if demo:
+		return
 	if control_mode:
 		if not in_room():
 			exit_control()

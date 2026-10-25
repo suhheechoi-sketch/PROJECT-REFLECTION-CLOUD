@@ -1,0 +1,40 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PASS TA NAV: T02 blocked before identity
+PASS TA NAV: body-clear route to terminal T-ID
+PASS TA NAV: CharacterBody sweep to T-ID
+PASS TA NAV: body-clear route to terminal L-07-PICKUP
+PASS TA NAV: CharacterBody sweep to L-07-PICKUP
+PASS TA NAV: body-clear route to terminal T-EXIT
+PASS TA NAV: CharacterBody sweep to T-EXIT
+PASS TA NAV: body-clear route to terminal A01-CONSOLE
+PASS TA NAV: CharacterBody sweep to A01-CONSOLE
+PASS TA NAV: body-clear route to terminal A-RESTORE
+PASS TA NAV: CharacterBody sweep to A-RESTORE
+PASS TA NAV: body-clear route to terminal A-LOG
+PASS TA NAV: CharacterBody sweep to A-LOG
+PASS TA NAV: body-clear route to terminal A03-HANDLE
+PASS TA NAV: CharacterBody sweep to A03-HANDLE
+PASS TA NAV: A02 station reachable (9.0, 0.0, 46.0)
+PASS TA NAV: CharacterBody sweep A02 station
+PASS TA NAV: A02 station reachable (12.0, 0.0, 47.0)
+PASS TA NAV: CharacterBody sweep A02 station
+PASS TA NAV: A02 station reachable (25.0, 0.0, 47.0)
+PASS TA NAV: CharacterBody sweep A02 station
+PASS TA NAV: local mirror service access T03-M1
+PASS TA NAV: local mirror service access T04-M1
+PASS TA NAV: local mirror service access T04-M2
+PASS TA NAV: local mirror service access A03-M1
+PASS TA NAV: local mirror service access A03-M2
+PASS TA NAV: local mirror service access A03-M3
+PASS TA NAV: local mirror service access A03-M4
+PASS TA NAV: actual capsule sweeps cannot escape the floorplan (count=0)
+PASS TA NAV: no direct receiver bypass at reachable 0.5m samples T03-RN count=0
+PASS TA NAV: no direct receiver bypass at reachable 0.5m samples T04-RN count=0
+PASS TA NAV: no direct receiver bypass at reachable 0.5m samples A01-RN count=0
+PASS TA NAV: no direct receiver bypass at reachable 0.5m samples A03-RO1 count=0
+PASS TA NAV: no direct receiver bypass at reachable 0.5m samples A03-RO2 count=0
+PASS TA NAV: no direct receiver bypass at reachable 0.5m samples A03-RN count=0
+PASS TA NAV: no direct receiver bypass at reachable 0.5m samples A02-RCTRL count=0
+PASS TA NAV: no direct receiver bypass at reachable 0.5m samples A02-RN count=0
+TA NAV: reachable cells=8244, failures=0, bypasses=0

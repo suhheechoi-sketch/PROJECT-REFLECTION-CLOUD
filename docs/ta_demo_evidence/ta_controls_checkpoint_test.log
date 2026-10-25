@@ -1,0 +1,30 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PASS TA UX: A01 screen ray selects A01-M1
+PASS TA UX: wheel 15 degrees A01-M1
+PASS TA UX: Shift wheel 1 degree A01-M1
+PASS TA UX: A01 screen ray selects A01-M2
+PASS TA UX: wheel 15 degrees A01-M2
+PASS TA UX: Shift wheel 1 degree A01-M2
+PASS TA UX: A01 screen ray selects A01-M3
+PASS TA UX: wheel 15 degrees A01-M3
+PASS TA UX: Shift wheel 1 degree A01-M3
+PASS TA UX: console blocks move and fire
+PASS TA UX: Esc exits A01 and clears selection
+PASS TA UX: A02 E console
+PASS TA UX: A02 screen ray selects A02-M1
+PASS TA UX: A02 screen ray selects A02-M2
+PASS TA UX: dock owns sole emitter
+PASS TA UX: F stops persistent beam
+PASS TA UX: F resumes persistent beam
+PASS TA UX: R retries A02 and returns emitter
+PASS TA UX: real shoulder emitter and camera floor aim solve T04
+PASS TA UX: shoulder origin and screen aim hit T03-RN
+PASS TA UX: shoulder origin and screen aim hit A01-RN
+PASS TA UX: shoulder origin and screen aim hit A03-RN
+PASS TA UX: reload resumes next incomplete stage
+PASS TA UX: reload restores handheld L07 without duplicate
+PASS TA UX: reload keeps completed A01 without circuit restoration
+PASS TA UX: Shift R clears full progress and emitter
+PASS TA UX: cleared checkpoint persists
+TA UX: 27 checks / 0 failures
